@@ -437,10 +437,111 @@ dialog table { width: 100%; border-collapse: collapse; } dialog td { padding: 4p
 
 @media (min-width: 1001px) and (max-width: 1500px) { .nav button { padding: 6px 8px; font-size: 13px; gap: 4px; } .brand small { display: none; } }
 
-\n/* Wave Composer enlarged main graph */\n.c-main-large { height: min(56vh, 520px) !important; min-height: 360px; resize: none; overflow: hidden; }\n.c-main-large canvas { width: 100%; height: 100%; touch-action: none; }\n#cSweepRow[hidden] { display:none !important; }\n</style>
+\n/* Wave Composer enlarged main graph */\n.c-main-large { height: min(56vh, 520px) !important; min-height: 360px; resize: none; overflow: hidden; }\n.c-main-large canvas { width: 100%; height: 100%; touch-action: none; }\n#cSweepRow[hidden] { display:none !important; }
+/* =====================================================================
+   Mathematical Orchestra - animated intro + Learn More experiences
+   (added module; uses the app's own colour tokens so light/dark both work)
+   ===================================================================== */
+/* ---------- opening animation ---------- */
+.moIntro { display: none; position: fixed; inset: 0; z-index: 400; background: radial-gradient(120% 90% at 50% 45%, #121827 0%, #0a0d14 70%); color: #ece8df; overflow: hidden; transform-origin: 50% 50%; will-change: transform, opacity; }
+html.mo-intro-on .moIntro { display: block; }
+.moIntro canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.moIntro .tag { position: absolute; left: 0; right: 0; bottom: 14vh; text-align: center; pointer-events: none; padding: 0 16px; }
+.moIntro .tag b { display: block; font: 700 clamp(26px, 5.4vw, 52px)/1.1 var(--math); letter-spacing: .4px; opacity: 0; transform: translateY(10px); transition: opacity .8s ease, transform .8s ease; text-shadow: 0 0 28px rgba(255,181,71,.35); }
+.moIntro .tag small { display: block; margin-top: 8px; color: #a0a7bb; font-size: clamp(12px, 1.8vw, 16px); letter-spacing: 1.6px; text-transform: uppercase; opacity: 0; transition: opacity .8s ease .25s; }
+.moIntro.title .tag b, .moIntro.title .tag small { opacity: 1; transform: none; }
+.moIntro .skip { position: absolute; right: max(14px, env(safe-area-inset-right)); top: max(14px, env(safe-area-inset-top)); z-index: 2; background: rgba(28,32,48,.7); color: #ece8df; border: 1px solid #3a4260; border-radius: 999px; padding: 8px 16px; font-weight: 600; backdrop-filter: blur(6px); }
+.moIntro .skip:hover { background: rgba(58,66,96,.85); }
+.moIntro.leave { transition: transform .9s cubic-bezier(.6,.05,.2,1), opacity .9s ease, filter .9s ease; transform: scale(1.7); opacity: 0; filter: blur(5px); pointer-events: none; }
+html.mo-intro-on .top, html.mo-intro-on main, html.mo-intro-on .mobilenav { visibility: hidden; }
+html.mo-intro-reveal .top, html.mo-intro-reveal main, html.mo-intro-reveal .mobilenav { visibility: visible; animation: moReveal .9s ease both; }
+@keyframes moReveal { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: none; } }
+
+/* ---------- Learn More call-to-action cards ---------- */
+.learncta { position: relative; overflow: hidden; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin: 4px 0 12px; padding: 16px 18px; border-radius: var(--r); border: 1px solid var(--line2); background: linear-gradient(120deg, var(--panel) 0%, var(--panel2) 100%); box-shadow: var(--shadow); }
+.learncta::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 26px 26px; opacity: .55; -webkit-mask-image: linear-gradient(90deg, transparent, #000 70%); mask-image: linear-gradient(90deg, transparent, #000 70%); pointer-events: none; }
+.learncta > * { position: relative; }
+.learncta h3 { margin: 0 0 3px; font: 700 18px/1.2 var(--math); }
+.learncta p { margin: 0; color: var(--muted); max-width: 62ch; font-size: 13px; }
+.learncta svg.ctawave { width: 120px; height: 42px; flex: none; }
+.learncta svg.ctawave path { fill: none; stroke: var(--accent); stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: ctaDraw 3.2s ease-in-out infinite alternate; }
+@keyframes ctaDraw { to { stroke-dashoffset: 0; } }
+.learncta .ctatxt { flex: 1 1 280px; min-width: 0; }
+
+/* ---------- learning view shell ---------- */
+.lnview { position: fixed; inset: 0; z-index: 120; display: flex; flex-direction: column; background: var(--bg); color: var(--text); }
+.lnview[hidden] { display: none; }
+.lnbar { flex: none; display: flex; align-items: center; gap: 10px; padding: 8px 14px; padding-top: max(8px, env(safe-area-inset-top)); background: var(--panel); border-bottom: 1px solid var(--line); position: relative; z-index: 3; }
+.lnbar .lnttl { font: 700 16px var(--math); white-space: nowrap; margin-right: 4px; }
+.lnchips { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0; }
+.lnchips::-webkit-scrollbar { display: none; }
+.lnchips button { flex: none; background: none; border: 1px solid transparent; color: var(--muted); border-radius: 999px; padding: 5px 11px; font-weight: 600; font-size: 12.5px; white-space: nowrap; }
+.lnchips button:hover { color: var(--text); background: var(--panel2); }
+.lnchips button[aria-current="true"] { color: var(--accent-ink); background: var(--accent); }
+.lnprog { position: absolute; left: 0; bottom: -1px; height: 3px; width: 100%; background: transparent; }
+.lnprog i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent2), var(--accent)); box-shadow: 0 0 10px var(--accent); }
+.lnscroll { flex: 1; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; padding-bottom: 80px; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 40px 40px; background-attachment: local; }
+:root[data-motion="off"] .lnscroll { scroll-behavior: auto; }
+@media (prefers-reduced-motion: reduce) { .lnscroll { scroll-behavior: auto; } }
+.lnhero { padding: clamp(28px, 6vw, 70px) clamp(16px, 5vw, 60px) 24px; max-width: 1080px; margin: 0 auto; }
+.lnhero h1 { margin: 0 0 10px; font: 700 clamp(28px, 5vw, 50px)/1.08 var(--math); background: linear-gradient(95deg, var(--text), var(--accent) 80%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lnhero p { max-width: 70ch; color: var(--muted); font-size: clamp(14px, 1.7vw, 17px); margin: 0 0 14px; }
+.lnchap { max-width: 1080px; margin: 0 auto; padding: clamp(30px, 5vw, 56px) clamp(14px, 4vw, 40px); border-top: 1px solid var(--line); scroll-margin-top: 8px; }
+.lnchap > .kick { color: var(--accent2); font: 700 12px var(--mono); letter-spacing: 1.6px; text-transform: uppercase; margin-bottom: 6px; }
+.lnchap > h2 { margin: 0 0 12px; font: 700 clamp(22px, 3.4vw, 34px)/1.15 var(--math); }
+.lnchap p { max-width: 72ch; line-height: 1.6; font-size: 15px; }
+.lnchap p.lead { font-size: 16.5px; }
+.lnchap ul.lnl { max-width: 72ch; line-height: 1.6; padding-left: 20px; font-size: 15px; }
+.lnchap b.k1 { color: var(--la); } .lnchap b.k2 { color: var(--lb); } .lnchap b.k3 { color: var(--lc); } .lnchap b.k4 { color: var(--ld); }
+.lneq { display: inline-block; font-family: var(--math); font-size: 1.12em; padding: 6px 14px; margin: 6px 0; border: 1px solid var(--line2); border-radius: 10px; background: var(--panel); }
+.lnfig { margin: 16px 0; background: var(--plot); border: 1px solid var(--line); border-radius: var(--r); padding: 10px; box-shadow: var(--shadow); }
+.lnfig canvas, .lncv { display: block; width: 100%; border-radius: 8px; touch-action: pan-y; }
+.lnfig figcaption, .lncap { color: var(--muted); font-size: 12.5px; margin-top: 8px; }
+.lnctl { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px 18px; margin: 12px 0 0; }
+.lnsl { display: block; font-size: 12.5px; color: var(--muted); }
+.lnsl > span { display: flex; justify-content: space-between; margin-bottom: 2px; }
+.lnsl b { color: var(--text); font-family: var(--mono); font-weight: 600; }
+.lnsl input[type=range] { width: 100%; accent-color: var(--accent); }
+.lnrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0 0; }
+.lnrow label.chk { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; }
+.lnread { font-family: var(--mono); font-size: 12.5px; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; margin-top: 8px; overflow-wrap: anywhere; min-height: 2.2em; }
+.lncards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 16px; }
+.lncard { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; }
+.lncard h3 { margin: 0 0 4px; font-size: 15px; }
+.lncard p { font-size: 13px; margin: 6px 0 0; color: var(--muted); }
+.lnsteps { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; counter-reset: st; }
+.lnsteps li { counter-increment: st; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px 9px 38px; position: relative; font-size: 12.5px; color: var(--muted); transition: border-color .3s, background .3s, color .3s; min-height: 54px; }
+.lnsteps li::before { content: counter(st); position: absolute; left: 9px; top: 9px; width: 20px; height: 20px; border-radius: 50%; background: var(--raised); color: var(--text); display: grid; place-items: center; font: 700 11px var(--mono); }
+.lnsteps li.on { border-color: var(--accent); color: var(--text); background: var(--panel2); }
+.lnsteps li.on::before { background: var(--accent); color: var(--accent-ink); }
+.lnsteps li.done::before { background: var(--good); color: #04120a; }
+.lnnote { border-left: 3px solid var(--accent2); background: var(--panel); border-radius: 0 10px 10px 0; padding: 8px 12px; margin: 14px 0; font-size: 13.5px; color: var(--muted); max-width: 72ch; }
+.lnnote b { color: var(--text); }
+.lnimgs { display: flex; gap: 6px; flex-wrap: wrap; align-items: flex-start; }
+.lnimgs figure { margin: 0; text-align: center; font-size: 11.5px; color: var(--muted); }
+.lnimgs canvas { width: 92px; height: 92px; image-rendering: pixelated; border: 1px solid var(--line); border-radius: 6px; background: #000; }
+.lnfoot { max-width: 1080px; margin: 0 auto; padding: 30px clamp(14px, 4vw, 40px) 40px; display: flex; gap: 10px; flex-wrap: wrap; border-top: 1px solid var(--line); }
+/* scroll-triggered reveal: content is visible unless the script has armed it */
+.lnview.armed .rv { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+.lnview.armed .rv.in { opacity: 1; transform: none; }
+.lnview.armed .rv.d1 { transition-delay: .08s; } .lnview.armed .rv.d2 { transition-delay: .16s; } .lnview.armed .rv.d3 { transition-delay: .24s; }
+@media (max-width: 700px) {
+  .lnbar .lnttl { display: none; }
+  .lnchap p, .lnchap ul.lnl { font-size: 14.5px; }
+  .lnimgs canvas { width: 84px; height: 84px; }
+  .lnctl { grid-template-columns: 1fr; }
+  .learncta svg.ctawave { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .moIntro .tag b, .moIntro .tag small { transition: none; } .learncta svg.ctawave path { stroke-dashoffset: 0; } }
+:root[data-motion="off"] .learncta svg.ctawave path { stroke-dashoffset: 0; }
+
+\n</style>
 <meta name="opencv-js-path" content="opencv.js">
+<script>/* decide before first paint whether the opening animation plays (every time the page opens or reloads) */
+(function(){try{var d=document.documentElement;if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;var p=localStorage.getItem('mo.prefs');if(p&&JSON.parse(p).motionOff)return;d.classList.add('mo-intro-on');setTimeout(function(){d.classList.remove('mo-intro-on','mo-intro-reveal');},15000);}catch(e){}})();</script>
 </head>
 <body>
+<div class="moIntro" id="moIntro" role="presentation"><canvas id="moIntroCv" aria-hidden="true"></canvas><div class="tag"><b>Mathematical Orchestra</b><small>Equations you can see and hear</small></div><button class="skip" id="moSkip" type="button">Skip intro</button></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <symbol id="i-graph" viewBox="0 0 24 24"><path d="M3 20V4M3 20h18M6 15c2-8 4-8 6-2s4 6 6-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -708,6 +809,7 @@ dialog table { width: 100%; border-collapse: collapse; } dialog td { padding: 4p
           <h3>Appearance</h3>
           <label class="f"><span>Theme</span><select class="field" id="themeSel" aria-label="Theme" style="grid-column: 2 / 4"><option value="dark">Dark</option><option value="light">Light</option><option value="auto">Follow system</option></select></label>
           <label class="row tight"><input type="checkbox" id="motionOff"> Turn off animations</label>
+          <div class="row" style="margin-top:8px"><button class="btn sm" type="button" data-replay-intro>Replay the opening animation</button></div>
         </div>
         <div class="card">
           <h3>Behavior</h3>
@@ -765,6 +867,7 @@ dialog table { width: 100%; border-collapse: collapse; } dialog td { padding: 4p
       <div class="row" id="demos"></div>
       <p class="hint" id="demoNote" aria-live="polite"></p>
     </details>
+    <aside class="learncta" id="ctaSonify" aria-label="Learn more about graph sonification"><div class="ctatxt"><h3>Learn how a graph becomes sound</h3><p>A six-chapter interactive guide to sonification: follow a point along a curve, see the waveform it makes, hear different functions, and experiment in a small laboratory. Your equation and settings stay exactly as they are.</p></div><svg class="ctawave" viewBox="0 0 120 42" aria-hidden="true"><path pathLength="1" d="M3 21c8-26 14-26 22 0s14 26 22 0 14-26 22 0 14 26 22 0 12-14 14-8"/></svg><button class="btn primary" type="button" data-learn="sonify"><svg><use href="#i-help"/></svg>Learn More</button></aside>
   </section>
 </main>
 
@@ -1110,6 +1213,7 @@ dialog table { width: 100%; border-collapse: collapse; } dialog td { padding: 4p
 
   <!-- ============ FOURIER ============ -->
   <div class="lbpane" id="lp-fourier" role="tabpanel">
+    <aside class="learncta" id="ctaFourier" aria-label="Learn more about the Fourier Transformation"><div class="ctatxt"><h3>New to the Fourier Transformation?</h3><p>An interactive guide: sine waves, adding harmonics, the FFT, real-world uses, and a lab where you build and hear your own sound. Opening it does not touch your recording or analysis.</p></div><svg class="ctawave" viewBox="0 0 120 42" aria-hidden="true"><path pathLength="1" d="M3 21c8-26 14-26 22 0s14 26 22 0 14-26 22 0 14 26 22 0 12-14 14-8"/></svg><button class="btn primary" type="button" data-learn="fourier"><svg><use href="#i-help"/></svg>Learn More</button></aside>
     <div class="card lbcard">
       <h3>Fourier analysis <small id="fSegInfo">no recording</small></h3>
       <div class="lbf">
@@ -7304,6 +7408,821 @@ return API;
 })();
 
 window.Labs = Labs;
+</script>
+<script>
+/* ===== Learn More guides + opening animation (added) ===== */
+
+/* =====================================================================
+   Mathematical Orchestra: animated intro + "Learn More" experiences.
+   Added module. It reuses the app's own globals: audio (BrowserAudio),
+   buildCurve / curveValueAt / makePeriod / getExpr (curve + table engine),
+   LabsCore.fft (FFT), pause() and Labs.stopAudio() (to silence the app),
+   setTab(), Store, prefs and the CSS colour tokens.
+   ===================================================================== */
+const MOLearn = (() => {
+'use strict';
+const TAU = Math.PI * 2;
+const $1 = (s, r = document) => r.querySelector(s);
+const cl = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = (t) => (t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t));
+const noMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'off'; } catch (e) { return false; } };
+const fmtv = (v, d = 2) => (Number.isFinite(v) ? (+v.toFixed(d)).toString() : '—');
+function rng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+/* ---------- theme colours (read from the app's CSS variables) ---------- */
+const TH = {};
+function readTheme() { const cs = getComputedStyle(document.documentElement); for (const k of ['bg', 'panel', 'panel2', 'raised', 'line', 'line2', 'text', 'muted', 'accent', 'accent2', 'plot', 'grid', 'grid2', 'axis', 'la', 'lb', 'lc', 'ld', 'good', 'bad', 'max', 'min']) TH[k] = cs.getPropertyValue('--' + k).trim() || '#888'; }
+readTheme();
+const MONO = '11.5px ui-monospace, "SF Mono", Consolas, monospace';
+
+/* ---------- silence whatever the main app is playing (state is kept, only sound pauses) ---------- */
+function silenceApp() {
+  try { if (typeof S !== 'undefined' && S.playing === 'playing') pause(); } catch (e) { /* ignore */ }
+  try { if (window.Labs) Labs.stopAudio(); } catch (e) { /* ignore */ }
+}
+
+/* ---------- shared audio output: routed through the existing engine's limiter ---------- */
+const LA = { out: null, vol: 0.5 };
+async function actx() {
+  if (!audio.supported) throw new Error('This browser has no Web Audio support.');
+  await audio.ensure();
+  const c = audio.ctx; if (!c) throw new Error('The audio engine could not start.');
+  if (c.state === 'suspended') { try { await c.resume(); } catch (e) { /* needs a gesture */ } }
+  if (!LA.out || LA.out.context !== c) { LA.out = c.createGain(); LA.out.connect(audio.limiter || c.destination); }
+  LA.out.gain.value = Math.pow(LA.vol, 1.7) * 0.8;   // same loudness law as BrowserAudio.masterGain()
+  return c;
+}
+const warn = (m) => { try { toast(m); } catch (e) { console.warn(m); } };
+
+/* ---------- generic view (full-screen, scrollable, chaptered) ---------- */
+const views = {};
+const INERT = ['.top', '#workspace', '#drawView', '#labsView', '#mnav'];
+function createView(def) {
+  const v = { id: def.id, def, open: false, cvs: [], raf: 0, last: 0, io: null, io2: null, ro: null, mo: null, built: false, opener: null, scrollFn: null };
+  const el = document.createElement('div');
+  el.className = 'lnview'; el.id = def.id; el.hidden = true; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', def.title);
+  v.el = el;
+
+  v.build = () => {
+    if (v.built) return; v.built = true;
+    el.innerHTML = `<div class="lnbar"><button class="btn" data-back title="${def.backTitle}"><svg><use href="#i-prev"/></svg>${def.back}</button><span class="lnttl">${def.short}</span>
+      <nav class="lnchips" aria-label="Chapters">${def.chapters.map((c, i) => `<button data-ch="${i}">${i + 1} · ${c.label}</button>`).join('')}</nav><div class="lnprog" aria-hidden="true"><i></i></div></div>
+      <div class="lnscroll" tabindex="-1"><header class="lnhero rv">${def.hero}</header>
+      ${def.chapters.map((c, i) => `<section class="lnchap" id="${def.id}-c${i}" aria-labelledby="${def.id}-h${i}"><div class="kick rv">Chapter ${i + 1}</div><h2 id="${def.id}-h${i}" class="rv d1">${c.title}</h2>${c.html}</section>`).join('')}
+      <footer class="lnfoot"><button class="btn primary" data-back><svg><use href="#i-prev"/></svg>${def.back}</button><button class="btn" data-top>Back to the start of this guide</button></footer></div>`;
+    document.body.appendChild(el);
+    el.addEventListener('click', (e) => {
+      if (e.target.closest('[data-back]')) { v.close(); return; }
+      if (e.target.closest('[data-top]')) { v.scroller.scrollTo({ top: 0, behavior: noMotion() ? 'auto' : 'smooth' }); return; }
+      const b = e.target.closest('[data-ch]'); if (b) v.goto(+b.dataset.ch);
+    });
+    el.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); v.close(); } });   // keep app shortcuts (Space, W/S, ...) out of the guide
+    v.scroller = $1('.lnscroll', el); v.bar = $1('.lnprog i', el);
+    def.setup(v);
+  };
+  v.goto = (i) => { const s = $1('#' + def.id + '-c' + i, el); if (s) s.scrollIntoView({ behavior: noMotion() ? 'auto' : 'smooth', block: 'start' }); };
+
+  /* canvas registry: draw(g, w, h, cv, dt) ; set cv.anim = true while it still moves */
+  v.reg = (name, draw, o = {}) => {
+    const c = $1(`canvas[data-cv="${name}"]`, el); if (!c) return null;
+    const cv = { c, g: c.getContext('2d'), w: 300, h: o.h || 220, fn: draw, vis: false, dirty: true, anim: false, p: 0, started: false, st: {}, name };
+    c.style.height = (o.h || 220) + 'px'; v.cvs.push(cv);
+    cv.invalidate = () => { cv.dirty = true; v.kick(); };
+    cv.restart = () => { cv.p = 0; cv.started = true; cv.anim = true; cv.dirty = true; v.kick(); };
+    cv.draw = (dt) => { const d = window.devicePixelRatio || 1, W = Math.max(40, c.clientWidth), H = Math.max(40, c.clientHeight); if (c.width !== Math.round(W * d) || c.height !== Math.round(H * d)) { c.width = Math.round(W * d); c.height = Math.round(H * d); } cv.w = W; cv.h = H; cv.g.setTransform(d, 0, 0, d, 0, 0); cv.g.clearRect(0, 0, W, H); cv.fn(cv.g, W, H, cv, dt); };
+    return cv;
+  };
+  const frame = (now) => {
+    v.raf = 0; const dt = Math.min(0.05, (now - v.last) / 1000); v.last = now; let again = false;
+    for (const cv of v.cvs) { if (!cv.vis || !(cv.dirty || cv.anim)) continue; cv.dirty = false; try { cv.draw(dt); } catch (e) { cv.anim = false; console.error(e); } if (cv.anim) again = true; }
+    if (v.tickers) for (const t of v.tickers) { try { if (t(dt)) again = true; } catch (e) { console.error(e); } }
+    if (again && v.open) v.raf = requestAnimationFrame(frame);
+  };
+  v.kick = () => { if (!v.raf && v.open) { v.last = performance.now(); v.raf = requestAnimationFrame(frame); } };
+  v.invalidateAll = () => { for (const cv of v.cvs) cv.dirty = true; v.kick(); };
+  /* advance a one-shot progress value (0..1); jumps to the end when motion is off */
+  v.adv = (cv, dt, dur) => { if (noMotion()) { cv.p = 1; cv.anim = false; return 1; } cv.p = Math.min(1, cv.p + dt / dur); if (cv.p >= 1) cv.anim = false; return cv.p; };
+
+  v.openView = (opener) => {
+    v.build();
+    silenceApp();
+    v.opener = opener || document.activeElement; v.open = true; readTheme();
+    for (const q of INERT) { const n = $1(q); if (n) n.setAttribute('inert', ''); }
+    el.hidden = false;
+    /* observers are created on every open and torn down on close */
+    if ('IntersectionObserver' in window) {
+      el.classList.add('armed');
+      v.io = new IntersectionObserver((es) => { for (const e of es) if (e.isIntersecting) { e.target.classList.add('in'); v.io.unobserve(e.target); } }, { root: v.scroller, threshold: 0.12 });
+      el.querySelectorAll('.rv:not(.in)').forEach((n) => v.io.observe(n));
+      v.io2 = new IntersectionObserver((es) => {
+        for (const e of es) { const cv = v.cvs.find((x) => x.c === e.target); if (!cv) continue; cv.vis = e.isIntersecting; if (cv.vis) { if (!cv.started && cv.autostart) { cv.restart(); } else cv.dirty = true; v.kick(); } }
+        if (v.afterVis) v.afterVis.forEach((f) => { try { f(); } catch (er) { console.error(er); } });
+      }, { root: v.scroller, rootMargin: '60px', threshold: 0.05 });
+      v.cvs.forEach((cv) => v.io2.observe(cv.c));
+    } else { el.classList.remove('armed'); v.cvs.forEach((cv) => { cv.vis = true; if (cv.autostart && !cv.started) cv.restart(); }); if (v.afterVis) v.afterVis.forEach((f) => f()); }
+    if ('ResizeObserver' in window) { v.ro = new ResizeObserver(() => v.invalidateAll()); v.ro.observe(v.scroller); }
+    v.mo = new MutationObserver(() => { readTheme(); v.invalidateAll(); }); v.mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    v.scrollFn = () => { if (v.sRaf) return; v.sRaf = requestAnimationFrame(() => { v.sRaf = 0; const s = v.scroller, max = s.scrollHeight - s.clientHeight; v.bar.style.width = (max > 0 ? 100 * s.scrollTop / max : 0) + '%'; let cur = -1; def.chapters.forEach((c, i) => { const n = $1('#' + def.id + '-c' + i, el); if (n && n.getBoundingClientRect().top - s.getBoundingClientRect().top < s.clientHeight * 0.4) cur = i; }); el.querySelectorAll('[data-ch]').forEach((b) => { const on = +b.dataset.ch === cur; if (on) { if (b.getAttribute('aria-current') !== 'true') { b.setAttribute('aria-current', 'true'); const bar = b.parentNode; bar.scrollTo({ left: b.offsetLeft - bar.clientWidth / 3, behavior: 'auto' }); } } else b.removeAttribute('aria-current'); }); }); };
+    v.scroller.addEventListener('scroll', v.scrollFn, { passive: true }); v.scrollFn();
+    if (def.onOpen) def.onOpen(v);
+    v.kick();
+    const back = $1('[data-back]', el); if (back) back.focus({ preventScroll: true });
+  };
+  v.close = () => {
+    if (!v.open) return; v.open = false;
+    try { if (def.onClose) def.onClose(v); } catch (e) { console.error(e); }
+    if (v.raf) { cancelAnimationFrame(v.raf); v.raf = 0; } if (v.sRaf) { cancelAnimationFrame(v.sRaf); v.sRaf = 0; }
+    for (const k of ['io', 'io2', 'ro', 'mo']) { if (v[k]) { v[k].disconnect(); v[k] = null; } }
+    if (v.scrollFn) { v.scroller.removeEventListener('scroll', v.scrollFn); v.scrollFn = null; }
+    v.cvs.forEach((cv) => { cv.vis = false; });
+    el.querySelectorAll('.rv').forEach((n) => n.classList.add('in'));     // already seen: never replay
+    el.hidden = true;
+    for (const q of INERT) { const n = $1(q); if (n) n.removeAttribute('inert'); }
+    try { if (typeof graph !== 'undefined' && graph && !$1('#workspace').hidden) { graph.resize(); graph.invalidate(); } } catch (e) { /* ignore */ }
+    const o = v.opener; v.opener = null; if (o && o.focus && document.contains(o)) { try { o.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
+  };
+  views[def.id] = v; return v;
+}
+
+/* ---------- small DOM/plot helpers ---------- */
+const sl = (id, label, min, max, step, val, unit = '') => `<label class="lnsl"><span>${label}<b id="${id}-v">${val}${unit}</b></span><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}" aria-label="${label}"></label>`;
+function bindSl(root, id, unit, onInput, dig) { const inp = $1('#' + id, root), out = $1('#' + id + '-v', root); const f = () => { const val = +inp.value; out.textContent = (dig == null ? +val.toFixed(3) : val.toFixed(dig)) + (unit || ''); onInput(val); }; inp.addEventListener('input', f); return { set(v) { inp.value = v; out.textContent = (dig == null ? +(+v).toFixed(3) : (+v).toFixed(dig)) + (unit || ''); } }; }
+function box(w, h, o = {}) { const l = o.l == null ? 40 : o.l, r = o.r == null ? 12 : o.r, t = o.t == null ? 14 : o.t, b = o.b == null ? 26 : o.b; return { l, r, t, b, w: w - l - r, h: h - t - b, x0: l, y0: t }; }
+function plotGrid(g, B, xt, yt, opt = {}) {   // xt: [{v, label}] pixel positions already; draws light grid + ticks
+  g.save(); g.fillStyle = TH.plot; g.fillRect(B.x0, B.y0, B.w, B.h); g.lineWidth = 1; g.font = MONO; g.fillStyle = TH.axis;
+  g.strokeStyle = TH.grid2; g.beginPath(); for (const t of xt) { g.moveTo(Math.round(t.p) + .5, B.y0); g.lineTo(Math.round(t.p) + .5, B.y0 + B.h); } for (const t of yt) { g.moveTo(B.x0, Math.round(t.p) + .5); g.lineTo(B.x0 + B.w, Math.round(t.p) + .5); } g.stroke();
+  g.textAlign = 'center'; g.textBaseline = 'top'; for (const t of xt) if (t.label != null) g.fillText(t.label, t.p, B.y0 + B.h + 5);
+  g.textAlign = 'right'; g.textBaseline = 'middle'; for (const t of yt) if (t.label != null) g.fillText(t.label, B.x0 - 5, t.p);
+  if (opt.xl) { g.textAlign = 'right'; g.textBaseline = 'bottom'; g.fillText(opt.xl, B.x0 + B.w, B.y0 + B.h + 24); }
+  g.strokeStyle = TH.axis; g.strokeRect(B.x0 + .5, B.y0 + .5, B.w - 1, B.h - 1); g.restore();
+}
+function line(g, pts, col, wd = 2, glow = 0) { if (pts.length < 2) return; g.save(); g.strokeStyle = col; g.lineWidth = wd; g.lineJoin = 'round'; g.lineCap = 'round'; if (glow) { g.shadowColor = col; g.shadowBlur = glow; } g.beginPath(); let pen = false; for (const p of pts) { if (!p || !Number.isFinite(p[1])) { pen = false; continue; } if (!pen) { g.moveTo(p[0], p[1]); pen = true; } else g.lineTo(p[0], p[1]); } g.stroke(); g.restore(); }
+function dot(g, x, y, r, col, glow = 12) { g.save(); g.fillStyle = col; g.shadowColor = col; g.shadowBlur = glow; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); g.restore(); }
+function txt(g, s, x, y, col, al = 'left', font) { g.save(); g.fillStyle = col || TH.text; g.font = font || MONO; g.textAlign = al; g.textBaseline = 'middle'; g.fillText(s, x, y); g.restore(); }
+function arrow(g, x0, y0, x1, y1, col) { g.save(); g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke(); const a = Math.atan2(y1 - y0, x1 - x0); g.beginPath(); g.moveTo(x1, y1); g.lineTo(x1 - 8 * Math.cos(a - .4), y1 - 8 * Math.sin(a - .4)); g.lineTo(x1 - 8 * Math.cos(a + .4), y1 - 8 * Math.sin(a + .4)); g.closePath(); g.fill(); g.restore(); }
+const fftR = (re, im, inv) => LabsCore.fft(re, im, inv);
+/** Amplitude spectrum (single-sided, linear amplitude: a sine of amplitude A reads A) of x[0..N-1]. */
+function ampSpec(x, hann) { const N = x.length, re = new Float64Array(N), im = new Float64Array(N); let sw = 0; for (let i = 0; i < N; i++) { const w = hann ? 0.5 - 0.5 * Math.cos(TAU * i / N) : 1; re[i] = x[i] * w; sw += w; } fftR(re, im, false); const o = new Float64Array(N / 2); for (let k = 0; k < N / 2; k++) o[k] = (k === 0 ? 1 : 2) * Math.hypot(re[k], im[k]) / sw; return o; }
+
+/* ---------- Graph-sonification player: SAME mapping as Graph Lab's sonifyStep(), SAME curve builder ---------- */
+const SON_DEF = { center: 440, oct: 2, sens: 12, auto: true };
+function sonMap(c, xq, st, o, dt) {      // identical maths to sonifyStep() in the main app, with the state kept in `st`
+  const span = c.spanSec; xq = Math.min(xq, span * 0.9999);
+  const y = curveValueAt(c, xq), ref = o.auto && c.peak > 1e-9 ? c.peak : 1;
+  let tl, ta, yn = 0, steep = 0;
+  if (!Number.isFinite(y)) { ta = 0; tl = st.logf == null ? Math.log2(o.center) : st.logf; }
+  else {
+    yn = cl(y / ref, -1, 1); tl = Math.log2(o.center) + yn * o.oct / 2;
+    const d = span * 0.004, y0 = curveValueAt(c, Math.max(0, xq - d)), y1 = curveValueAt(c, Math.min(span * 0.9999, xq + d));
+    steep = Number.isFinite(y0) && Number.isFinite(y1) ? Math.min(1, Math.abs(y1 - y0) / ref * o.sens) : 0;
+    ta = 0.35 + 0.65 * Math.sqrt(steep);
+  }
+  tl = cl(tl, Math.log2(60), Math.log2(6000));
+  if (st.logf == null) { st.logf = tl; st.amp = 0; }
+  const a = dt > 0 ? 1 - Math.exp(-dt / 0.04) : 1;
+  st.logf += (tl - st.logf) * a; st.amp += (ta - st.amp) * a;
+  return { y, yn, steep, pitch: Math.pow(2, st.logf), amp: st.amp, targetPitch: Math.pow(2, tl) };
+}
+/** Evaluate a graph (equation in x, x in [0,1]) with the app's own expression engine + curve builder. */
+const EXPR_ENV = { f: 1, a: 1, b: 1, c: 1, d: 1 };
+function makeCurve(eq, n = 1200) {
+  const ex = getExpr(eq);
+  const c = buildCurve(ex, { f: 1, amp: 1, spanSec: 1, n, a: 1, b: 1, c: 1, d: 1, level: 'limit', aa: true, prom: 5 });
+  c.expr = ex; c.eq = eq; return c;
+}
+const Son = {
+  cur: null, o: null, st: null, osc: null, g: null, state: 'stopped', pos: 0, sweep: 6, raf: 0, onTick: null, onEnd: null, last: 0, trig: null, loopSrc: null, mode: 'sonify', info: null,
+  async play(c, o, hooks) {
+    this.stopNodes(); this.cur = c; this.o = Object.assign({}, SON_DEF, o || {}); this.sweep = this.o.sweep || 6; this.pos = 0; this.state = 'playing'; this.mode = this.o.mode || 'sonify';
+    this.onTick = hooks && hooks.onTick; this.onEnd = hooks && hooks.onEnd; this.st = { logf: null, amp: 0 }; this.trig = new Set();
+    let ctx; try { ctx = await actx(); } catch (e) { this.state = 'stopped'; warn(e.message); if (this.onEnd) this.onEnd(true); return false; }
+    this.build(ctx); this.last = performance.now(); this.loop(); return true;
+  },
+  build(ctx) {
+    this.g = ctx.createGain(); this.g.gain.value = 0; this.g.connect(LA.out);
+    if (this.mode === 'wave') {   // "Waveform" mode of Graph Lab: the graph is ONE period, looped at the carrier frequency
+      const f = this.o.f || 220, r = makePeriod(this.cur.expr, EXPR_ENV, 1, 'limit', BROWSER_TABLE_N, 0.45 * audio.sr / f);
+      const buf = ctx.createBuffer(1, r.data.length, audio.sr), ch = buf.getChannelData(0); for (let i = 0; i < r.data.length; i++) ch[i] = r.data[i];
+      this.loopSrc = ctx.createBufferSource(); this.loopSrc.buffer = buf; this.loopSrc.loop = true; this.loopSrc.playbackRate.value = r.data.length * f / audio.sr; this.loopSrc.connect(this.g); this.loopSrc.start();
+      this.g.gain.setTargetAtTime(1, ctx.currentTime, 0.012);
+    } else { this.osc = ctx.createOscillator(); this.osc.type = 'sine'; this.osc.frequency.value = this.o.center; this.osc.connect(this.g); this.osc.start(); }
+  },
+  loop() {
+    cancelAnimationFrame(this.raf);
+    const step = (now) => {
+      if (this.state !== 'playing') return;
+      const dt = Math.min(0.1, (now - this.last) / 1000); this.last = now;
+      const span = this.cur.spanSec, prev = this.pos; this.pos += dt / Math.max(0.5, this.sweep) * span;
+      let done = false; if (this.pos >= span) { this.pos = span * 0.9999; done = true; }
+      let info = null;
+      if (this.mode === 'sonify') {
+        info = sonMap(this.cur, this.pos, this.st, this.o, dt); const t = audio.ctx.currentTime;
+        this.osc.frequency.setTargetAtTime(info.pitch, t, 0.02); this.g.gain.setTargetAtTime(cl(info.amp, 0, 1), t, 0.025);   // = BrowserAudio.setSonify()
+        if (this.o.beeps) this.cur.extrema.forEach((e, i) => { if (prev < e.x && e.x <= this.pos && !this.trig.has(i)) { this.trig.add(i); try { audio.beep(e.kind === 'max' ? MAX_BEEP_HZ : MIN_BEEP_HZ, S.adur, S.avol, 3); } catch (er) { /* ignore */ } } });
+      } else info = { y: curveValueAt(this.cur, this.pos), pitch: this.o.f || 220, amp: 1 };
+      this.info = info; if (this.onTick) this.onTick(this.pos, info);
+      if (done) { this.finish(); return; }
+      this.raf = requestAnimationFrame(step);
+    };
+    this.raf = requestAnimationFrame(step);
+  },
+  pause() { if (this.state !== 'playing') return; this.state = 'paused'; cancelAnimationFrame(this.raf); this.fadeOut(); },
+  async resume() { if (this.state !== 'paused') return; try { const ctx = await actx(); this.stopNodes(); this.build(ctx); } catch (e) { warn(e.message); return; } this.state = 'playing'; this.st = { logf: null, amp: 0 }; this.last = performance.now(); this.loop(); },
+  fadeOut() { const o = this.osc, l = this.loopSrc, g = this.g; this.osc = this.loopSrc = this.g = null; try { if (g && audio.ctx) g.gain.setTargetAtTime(0, audio.ctx.currentTime, 0.015); } catch (e) { /* ignore */ } setTimeout(() => Son.kill(o, l, g), 140); },
+  kill(o, l, g) { try { if (o) { o.stop(); o.disconnect(); } } catch (e) { /* ignore */ } try { if (l) { l.stop(); l.disconnect(); } } catch (e) { /* ignore */ } try { if (g) g.disconnect(); } catch (e) { /* ignore */ } },
+  stopNodes() { this.kill(this.osc, this.loopSrc, this.g); this.osc = this.loopSrc = this.g = null; },
+  finish() { this.state = 'stopped'; cancelAnimationFrame(this.raf); this.fadeOut(); if (this.onEnd) this.onEnd(false); },
+  stop() { const was = this.state !== 'stopped'; this.state = 'stopped'; cancelAnimationFrame(this.raf); this.fadeOut(); this.pos = 0; if (was && this.onEnd) this.onEnd(true); },
+};
+
+/* ---------- Fourier-lab synthesiser: one oscillator per partial, phase via PeriodicWave ---------- */
+const FSyn = {
+  nodes: [], playing: false,
+  wave(c, A, ph) { return c.createPeriodicWave(new Float32Array([0, Math.sin(ph)]), new Float32Array([0, Math.cos(ph)]), { disableNormalization: true }); },
+  async start(parts) {
+    let c; try { c = await actx(); } catch (e) { warn(e.message); return false; }
+    this.kill(); this.playing = true; this.out = c.createGain(); this.out.gain.value = 0; this.out.connect(LA.out); this.out.gain.setTargetAtTime(1, c.currentTime, 0.03);
+    parts.forEach((p, i) => { const o = c.createOscillator(), g = c.createGain(); o.setPeriodicWave(this.wave(c, p.a, p.ph)); o.frequency.value = p.f; g.gain.value = p.on ? p.a : 0; o.connect(g); g.connect(this.out); o.start(); this.nodes[i] = { o, g, ph: p.ph }; });
+    this.update(parts); return true;
+  },
+  update(parts) {
+    if (!this.playing || !audio.ctx) return; const c = audio.ctx, t = c.currentTime; let sum = 0; for (const p of parts) if (p.on) sum += Math.abs(p.a); const norm = sum > 0.9 ? 0.9 / sum : 1;
+    parts.forEach((p, i) => { const n = this.nodes[i]; if (!n) return; n.o.frequency.setTargetAtTime(p.f, t, 0.02); n.g.gain.setTargetAtTime(p.on ? p.a * norm : 0, t, 0.02); if (Math.abs(n.ph - p.ph) > 1e-6) { n.o.setPeriodicWave(this.wave(c, p.a, p.ph)); n.ph = p.ph; } });
+  },
+  kill() { this.playing = false; const out = this.out, ns = this.nodes; this.nodes = []; this.out = null; try { if (out && audio.ctx) out.gain.setTargetAtTime(0, audio.ctx.currentTime, 0.02); } catch (e) { /* ignore */ } setTimeout(() => { for (const n of ns) { try { n.o.stop(); n.o.disconnect(); n.g.disconnect(); } catch (e) { /* ignore */ } } try { if (out) out.disconnect(); } catch (e) { /* ignore */ } }, 120); },
+};
+document.addEventListener('visibilitychange', () => { if (document.hidden) { if (Son.state === 'playing') Son.pause(); if (FSyn.playing) { FSyn.kill(); for (const id in views) { const b = views[id].el.querySelector('[data-fsplay]'); if (b) b.textContent = 'Play'; } } } });
+
+/* =====================================================================
+   FOURIER TRANSFORMATION: LEARN MORE
+   ===================================================================== */
+const fourierHero = `<h1>The Fourier Transformation</h1><p>Every sound, every signal and every wiggly curve is a recipe of simple sine waves. This guide shows you how to read that recipe, step by step, with live waveforms you can change and a small laboratory at the end. Every spectrum here is computed by the same FFT that powers Fourier Analysis in Scientific Labs.</p><p class="lncap">Scroll down, or jump to a chapter above. Press Esc or Back to return to Fourier Analysis. Nothing in your recording or settings is changed.</p>`;
+
+const fourierChapters = [
+{ label: 'What is it?', title: 'What is a Fourier Transformation?', html: `
+<p class="lead rv">A <b class="k1">Fourier Transformation</b> takes a signal that changes over <b>time</b> and rewrites it as a list of <b>frequencies</b>: how much of each pure sine wave is hiding inside it.</p>
+<p class="rv">A microphone gives you one number per instant: the air pressure. That is the <b>time domain</b>. The same sound can be described another way: "a strong 220 Hz tone, a weaker one at 440 Hz, a faint one at 660 Hz". That is the <b>frequency domain</b>. Nothing is lost by switching; both views describe the identical signal.</p>
+<figure class="lnfig rv"><canvas data-cv="f1" role="img" aria-label="A waveform on the left becomes three frequency peaks on the right"></canvas><figcaption class="lncap">Left: the signal over time. Right: the same signal as frequencies. Each peak is one sine wave. <button class="btn sm" data-replay="f1">Replay</button></figcaption></figure>
+<ul class="lnl rv"><li><b class="k2">Why frequencies?</b> Sine waves are the only waves that keep their shape when they pass through a linear system such as a room, a speaker or a filter. Thinking in frequencies turns hard problems into simple ones.</li><li><b class="k3">Why it is useful.</b> Tuning instruments, removing hum, compressing images and music, sending radio, and finding what a star is made of all start by looking at the spectrum.</li></ul>` },
+{ label: 'The waveform', title: 'Understanding the waveform', html: `
+<p class="rv">The simplest signal is one sine wave. Three numbers describe it completely:</p>
+<p class="rv"><span class="lneq" id="f2eq">y(t) = A · sin(2π f t + φ)</span></p>
+<ul class="lnl rv"><li><b class="k1">Amplitude A</b>: how tall the wave is. It sets the loudness.</li><li><b class="k2">Frequency f</b>: cycles per second (Hz). It sets the pitch. The period is T = 1/f.</li><li><b class="k3">Phase φ</b>: where in its cycle the wave starts. It slides the wave left or right without changing its shape.</li></ul>
+<figure class="lnfig rv"><canvas data-cv="f2" role="img" aria-label="Interactive sine wave with amplitude, frequency and phase sliders"></canvas>
+<div class="lnctl">${sl('f2a', 'Amplitude A', 0.1, 1, 0.01, 0.8)}${sl('f2f', 'Frequency f (Hz)', 1, 10, 0.5, 3)}${sl('f2p', 'Phase φ (degrees)', -180, 180, 5, 0)}</div>
+<div class="lnread" id="f2r" aria-live="polite"></div></figure>
+<p class="lnnote rv"><b>Try it:</b> raise f and the wave squeezes together (the period T shrinks). Raise A and it grows taller but crosses zero at the same moments. Change φ and the whole picture slides sideways.</p>` },
+{ label: 'Combining waves', title: 'Combining multiple frequencies', html: `
+<p class="lead rv">Add sine waves whose frequencies are whole multiples of a base frequency and you can build almost any repeating shape.</p>
+<p class="rv">The base frequency is the <b class="k1">first harmonic</b> (fundamental). The <b>second harmonic</b> has twice that frequency, the <b>third</b> three times, and so on. Switch harmonics on and off below and watch the bottom curve, which is simply their sum, point by point.</p>
+<figure class="lnfig rv"><canvas data-cv="f3a" role="img" aria-label="Six harmonics drawn as separate waves"></canvas><canvas data-cv="f3b" style="margin-top:8px" role="img" aria-label="The sum of the selected harmonics"></canvas>
+<div class="lnrow" id="f3chk"></div>
+<div class="lnrow"><span class="lncap" style="margin:0">Recipe:</span><div class="seg" role="group" aria-label="Harmonic recipe" id="f3pre"><button data-r="saw" aria-pressed="false">Sawtooth 1/k</button><button data-r="sq" aria-pressed="true">Square 1/k (odd)</button><button data-r="tri" aria-pressed="false">Triangle 1/k² (odd)</button></div><button class="btn primary sm" id="f3anim">Animate the build-up</button></div>
+<div class="lnread" id="f3r" aria-live="polite"></div></figure>
+<p class="lnnote rv"><b>Notice:</b> one harmonic is a smooth wave. Three odd harmonics already look like a rounded square. Add more and the corners sharpen. A sharp edge needs many high frequencies.</p>` },
+{ label: 'Time to frequency', title: 'From time domain to frequency domain', html: `
+<p class="lead rv">Here the signal is made of three sine waves. The FFT recovers them from the combined curve alone.</p>
+<figure class="lnfig rv"><canvas data-cv="f4" role="img" aria-label="Signal, its three components and the resulting frequency spectrum"></canvas>
+<div class="lnctl">${sl('f4a', 'Strength of 2 Hz', 0, 1.2, 0.05, 1)}${sl('f4b', 'Strength of 5 Hz', 0, 1.2, 0.05, 0.6)}${sl('f4c', 'Strength of 9 Hz', 0, 1.2, 0.05, 0.35)}</div>
+<div class="lnrow"><button class="btn sm" data-replay="f4">Replay the transformation</button></div></figure>
+<ul class="lnl rv"><li><b class="k1">Position</b> of a peak (left to right) = the <b>frequency</b> of that sine wave.</li><li><b class="k2">Height</b> of a peak = its <b>amplitude</b>. Move a slider and only that peak changes.</li><li><b class="k3">Zero height</b> = that frequency is simply not in the signal.</li></ul>
+<p class="lnnote rv">The spectrum is computed by LabsCore.fft on 1024 samples of exactly one second, so the bins fall on whole hertz and each peak is sharp. For real recordings, Fourier Analysis offers a Hann window to reduce smearing between bins.</p>` },
+{ label: 'Real world', title: 'Real-world applications', html: `
+<p class="rv">The same idea, five different jobs. Each panel below runs a real FFT in your browser.</p>
+<div class="lncards">
+<div class="lncard rv"><h3>🎵 Music and audio</h3><canvas class="lncv" data-cv="f5a" role="img" aria-label="Spectrum of a changing chord"></canvas><p>A chord is several notes at once. The spectrum shows each note, plus its overtones, which give an instrument its timbre. Tuners, pitch correction and audio codecs all work here.</p></div>
+<div class="lncard rv d1"><h3>🔇 Noise reduction</h3><canvas class="lncv" data-cv="f5b" role="img" aria-label="Noisy signal and its filtered version"></canvas>${sl('f5bc', 'Keep frequencies below (Hz)', 10, 200, 1, 40)}<p>Noise spreads across all frequencies, the tones sit at a few. Zero the bins above the cutoff, transform back, and the hiss is gone. Faint = noisy input, bright = cleaned.</p></div>
+<div class="lncard rv"><h3>🖼️ Image processing</h3><div class="lnimgs"><figure><canvas data-cv="f5i1" width="64" height="64"></canvas>image</figure><figure><canvas data-cv="f5i2" width="64" height="64"></canvas>2-D spectrum</figure><figure><canvas data-cv="f5i3" width="64" height="64"></canvas>rebuilt</figure></div>${sl('f5ir', 'Frequencies kept (radius)', 1, 32, 1, 32)}<p>An image has 2-D frequencies too. Slowly varying shading is low frequency, sharp edges are high. Keeping only low frequencies blurs the picture, the idea behind JPEG compression.</p></div>
+<div class="lncard rv d1"><h3>📡 Communication systems</h3><canvas class="lncv" data-cv="f5c" role="img" aria-label="Two radio channels sharing one signal"></canvas><div class="lnrow"><div class="seg" role="group" aria-label="Tune to channel" id="f5ch"><button data-ch="0" aria-pressed="true">Tune to channel A (40 Hz)</button><button data-ch="1" aria-pressed="false">Tune to channel B (90 Hz)</button></div></div><p>Two stations share one wire by using different carrier frequencies. The spectrum separates them; a receiver keeps one band and recovers its message (bottom curve).</p></div>
+<div class="lncard rv"><h3>🔬 Scientific measurements</h3><canvas class="lncv" data-cv="f5s" role="img" aria-label="A decaying oscillation and its two spectral peaks"></canvas><p>An NMR or spectroscopy instrument records a decaying ringing. Its Fourier transform shows peaks, one for each kind of atom or molecule. The decay rate sets how wide each peak is.</p></div>
+</div>` },
+{ label: 'Laboratory', title: 'Interactive experiment: your own Fourier lab', html: `
+<p class="lead rv">Build a sound from up to eight sine waves, then see and hear it. The spectrum uses the same FFT as the rest of Scientific Labs, and playback goes through the app's audio engine and limiter.</p>
+<figure class="lnfig rv"><canvas data-cv="f6w" role="img" aria-label="Generated waveform"></canvas><canvas data-cv="f6s" style="margin-top:8px" role="img" aria-label="Frequency spectrum of the generated sound"></canvas>
+<div class="lnctl">${sl('f6f0', 'Base frequency (Hz)', 55, 880, 1, 220)}${sl('f6vol', 'Volume', 0, 100, 1, 50)}</div>
+<div class="lnrow"><button class="btn primary" data-fsplay id="f6play"><svg><use href="#i-play"/></svg>Play</button><button class="btn" id="f6stop"><svg><use href="#i-stop"/></svg>Stop</button><span class="lncap" style="margin:0">Press Play to start sound (browsers need a click first).</span></div>
+<div style="overflow-x:auto;margin-top:12px"><table class="lntbl" id="f6tbl" style="width:100%;border-collapse:collapse;font-size:12.5px"></table></div>
+<div class="lnrow"><button class="btn sm" data-p="sine">Pure sine</button><button class="btn sm" data-p="saw">Sawtooth</button><button class="btn sm" data-p="sq">Square</button><button class="btn sm" data-p="tri">Triangle</button><button class="btn sm" data-p="chord">Detuned bell</button></div></figure>
+<p class="lnnote rv"><b>Experiments:</b> turn every row off except row 1 for a pure sine. Set row 2 to ratio 2.0 and the pitch stays the same but the timbre changes. Set it to 2.76 and the sound turns bell-like, because the partials are no longer whole multiples of the base.</p>` },
+];
+
+function setupFourier(v) {
+  const el = v.el, Q = (s) => $1(s, el);
+  const COLS = () => [TH.la, TH.lb, TH.lc, TH.ld, TH.good, TH.max, TH.min, TH.accent2];
+  v.tickers = [];
+  el.addEventListener('click', (e) => { const b = e.target.closest('[data-replay]'); if (b) { const cv = v.cvs.find((x) => x.name === b.dataset.replay); if (cv) cv.restart(); } });
+
+  /* ---- Chapter 1: waveform becomes spectrum ---- */
+  const c1 = v.reg('f1', (g, w, h, cv, dt) => {
+    const p = v.adv(cv, dt, 4.2), P = [{ f: 2, a: 1, c: TH.la }, { f: 5, a: 0.6, c: TH.lb }, { f: 9, a: 0.35, c: TH.lc }], wl = w * 0.52;
+    const B = box(wl, h, { l: 14, r: 6, t: 20, b: 22 }), S2 = box(w - wl, h, { l: 20, r: 14, t: 20, b: 22 }); S2.x0 += wl;
+    txt(g, 'time domain', B.x0, 8, TH.muted); txt(g, 'frequency domain', S2.x0, 8, TH.muted);
+    plotGrid(g, B, [], [{ p: B.y0 + B.h / 2 }]); plotGrid(g, S2, [], []);
+    const draw = Math.min(1, p / 0.5), n = 240, pts = [];
+    for (let i = 0; i <= n * draw; i++) { const t = i / n; let y = 0; for (const q of P) y += q.a * Math.sin(TAU * q.f * t); pts.push([B.x0 + B.w * t, B.y0 + B.h / 2 - y / 2 * B.h * 0.46]); }
+    line(g, pts, TH.accent, 2.2, 8);
+    const grow = ease((p - 0.5) / 0.4), maxF = 12;
+    P.forEach((q, i) => { const x = S2.x0 + S2.w * q.f / maxF, hh = q.a * S2.h * 0.85 * grow; g.save(); g.strokeStyle = q.c; g.lineWidth = 6; g.lineCap = 'round'; g.shadowColor = q.c; g.shadowBlur = 10; g.beginPath(); g.moveTo(x, S2.y0 + S2.h); g.lineTo(x, S2.y0 + S2.h - hh); g.stroke(); g.restore(); if (grow > 0.9) txt(g, q.f + ' Hz', x, S2.y0 + S2.h + 12, TH.muted, 'center'); });
+    if (p > 0.45 && p < 0.95) arrow(g, B.x0 + B.w + 6, h / 2, S2.x0 - 6, h / 2, TH.accent2);
+    if (p < 1 || !noMotion()) cv.anim = p < 1;
+  }, { h: 230 }); if (c1) c1.autostart = true;
+
+  /* ---- Chapter 2: single sine ---- */
+  const F2 = { a: 0.8, f: 3, ph: 0 };
+  const c2 = v.reg('f2', (g, w, h) => {
+    const B = box(w, h, { l: 44, b: 28 }), xt = [], yt = [];
+    for (let i = 0; i <= 10; i++) xt.push({ p: B.x0 + B.w * i / 10, label: (i / 10).toFixed(1) });
+    for (const q of [-1, -0.5, 0, 0.5, 1]) yt.push({ p: B.y0 + B.h / 2 - q * B.h * 0.46, label: q.toFixed(1) });
+    plotGrid(g, B, xt, yt, { xl: 'time t (s)' });
+    const ph = F2.ph * Math.PI / 180, pts = [], X = (t) => B.x0 + B.w * t, Y = (y) => B.y0 + B.h / 2 - y * B.h * 0.46;
+    for (let i = 0; i <= 400; i++) { const t = i / 400; pts.push([X(t), Y(F2.a * Math.sin(TAU * F2.f * t + ph))]); }
+    line(g, pts, TH.accent, 2.4, 8);
+    const T = 1 / F2.f, t0 = ((-ph / (TAU * F2.f)) % T + T) % T;            // first upward zero crossing
+    g.save(); g.setLineDash([4, 4]); g.strokeStyle = TH.lb; g.beginPath(); g.moveTo(B.x0, Y(F2.a)); g.lineTo(B.x0 + B.w, Y(F2.a)); g.moveTo(B.x0, Y(-F2.a)); g.lineTo(B.x0 + B.w, Y(-F2.a)); g.stroke(); g.restore();
+    arrow(g, B.x0 + 16, Y(0), B.x0 + 16, Y(F2.a), TH.lb); txt(g, 'A', B.x0 + 24, (Y(0) + Y(F2.a)) / 2, TH.lb);
+    const tp = t0 + T / 4; if (tp + T <= 1) { arrow(g, X(tp), Y(F2.a) - 8, X(tp + T), Y(F2.a) - 8, TH.lc); txt(g, 'period T', X(tp + T / 2), Y(F2.a) - 18, TH.lc, 'center'); }
+    if (t0 < 1) { dot(g, X(t0), Y(0), 4.5, TH.ld, 8); txt(g, 'starts here', X(t0) + 7, Y(0) + 14, TH.ld); }
+    Q('#f2r').textContent = `A = ${fmtv(F2.a)}   f = ${fmtv(F2.f, 1)} Hz   T = 1/f = ${fmtv(1 / F2.f, 3)} s   φ = ${F2.ph}° (a shift of ${fmtv(F2.ph / 360 * T * 1000, 1)} ms)`;
+    Q('#f2eq').textContent = `y(t) = ${fmtv(F2.a)} · sin(2π · ${fmtv(F2.f, 1)} · t ${F2.ph >= 0 ? '+' : '−'} ${Math.abs(F2.ph)}°)`;
+  }, { h: 270 });
+  bindSl(el, 'f2a', '', (x) => { F2.a = x; c2.invalidate(); }); bindSl(el, 'f2f', ' Hz', (x) => { F2.f = x; c2.invalidate(); }); bindSl(el, 'f2p', '°', (x) => { F2.ph = x; c2.invalidate(); });
+
+  /* ---- Chapter 3: harmonics ---- */
+  const F3 = { K: 6, on: [1, 1, 1, 1, 1, 1].map((_, i) => i % 2 === 0), amp: [], sgn: [], w: [], cur: 0, rec: 'sq', f0: 2 };
+  const recipe = (r) => { F3.rec = r; for (let k = 1; k <= F3.K; k++) { const odd = k % 2 === 1; F3.amp[k - 1] = r === 'saw' ? 1 / k : r === 'sq' ? (odd ? 1 / k : 0) : (odd ? 1 / (k * k) : 0); F3.sgn[k - 1] = r === 'tri' && odd ? ((k - 1) / 2) % 2 === 0 ? 1 : -1 : r === 'saw' ? ((k % 2) ? 1 : -1) : 1; if (r === 'saw') F3.sgn[k - 1] = 1; } };
+  recipe('sq'); F3.w = F3.on.map((o) => (o ? 1 : 0));
+  Q('#f3chk').innerHTML = [1, 2, 3, 4, 5, 6].map((k) => `<label class="chk"><input type="checkbox" data-h="${k - 1}" ${F3.on[k - 1] ? 'checked' : ''}> <b style="color:var(--${['la', 'lb', 'lc', 'ld', 'good', 'max'][k - 1]})">harmonic ${k}</b> <small style="color:var(--muted)">${k * F3.f0} Hz</small></label>`).join('');
+  const hval = (k, t) => F3.amp[k] * F3.sgn[k] * F3.w[k] * Math.sin(TAU * (k + 1) * F3.f0 * t);
+  const c3a = v.reg('f3a', (g, w, h) => {
+    const B = box(w, h, { l: 44, b: 6, t: 6 }), rows = F3.K, rh = B.h / rows; g.save(); g.fillStyle = TH.plot; g.fillRect(B.x0, B.y0, B.w, B.h); g.restore();
+    for (let k = 0; k < rows; k++) { const cy = B.y0 + rh * (k + 0.5), pts = [], col = COLS()[k]; g.save(); g.strokeStyle = TH.grid2; g.beginPath(); g.moveTo(B.x0, cy); g.lineTo(B.x0 + B.w, cy); g.stroke(); g.restore(); for (let i = 0; i <= 300; i++) { const t = i / 300; pts.push([B.x0 + B.w * t, cy - hval(k, t) * rh * 0.46 * (F3.amp[k] ? 1 : 0)]); } g.save(); g.globalAlpha = F3.on[k] ? 1 : 0.25; line(g, pts, col, 1.8, 0); g.restore(); txt(g, (k + 1) + '×f', B.x0 - 6, cy, col, 'right'); const cx = B.x0 + B.w * F3.cur; dot(g, cx, cy - hval(k, F3.cur) * rh * 0.46, 3, col, 6); }
+    const cx = B.x0 + B.w * F3.cur; g.save(); g.strokeStyle = TH.text; g.globalAlpha = .4; g.beginPath(); g.moveTo(cx, B.y0); g.lineTo(cx, B.y0 + B.h); g.stroke(); g.restore();
+  }, { h: 240 });
+  const c3b = v.reg('f3b', (g, w, h, cv, dt) => {
+    const B = box(w, h, { l: 44, b: 24, t: 8 }), xt = [], yt = []; for (let i = 0; i <= 10; i++) xt.push({ p: B.x0 + B.w * i / 10, label: i % 2 ? null : (i / 10).toFixed(1) }); for (const q of [-1, 0, 1]) yt.push({ p: B.y0 + B.h / 2 - q * B.h * 0.4, label: q.toFixed(0) });
+    plotGrid(g, B, xt, yt, { xl: 't (s)' }); const pts = [], Y = (y) => B.y0 + B.h / 2 - y * B.h * 0.4;
+    let mx = 0; for (let k = 0; k < F3.K; k++) mx += Math.abs(F3.amp[k]); const sc = 1 / Math.max(1, mx * 0.7);
+    for (let i = 0; i <= 400; i++) { const t = i / 400; let s = 0; for (let k = 0; k < F3.K; k++) s += hval(k, t); pts.push([B.x0 + B.w * t, Y(s * sc * 1.1)]); }
+    line(g, pts, TH.accent, 2.6, 10);
+    let s = 0, terms = []; for (let k = 0; k < F3.K; k++) { const val = hval(k, F3.cur); if (F3.on[k] && F3.amp[k]) { s += val; terms.push(fmtv(val)); } }
+    dot(g, B.x0 + B.w * F3.cur, Y(s * sc * 1.1), 5, TH.accent, 14);
+    Q('#f3r').textContent = `at t = ${fmtv(F3.cur, 2)} s:  ${terms.length ? terms.join(' + ').replace(/\+ -/g, '− ') : '0'}  =  ${fmtv(s)}`;
+  }, { h: 200 });
+  /* the cursor sweeps while the chapter is on screen; the build-up tween is a ticker */
+  const f3tick = (dt) => {
+    let again = false; const vis = (c3a && c3a.vis) || (c3b && c3b.vis);
+    if (vis && !noMotion()) { F3.cur = (F3.cur + dt / 6) % 1; again = true; } else if (vis && noMotion()) { F3.cur = 0.25; }
+    for (let k = 0; k < F3.K; k++) { const tgt = F3.on[k] && !F3.hold ? 1 : 0; if (F3.build) { if (F3.build.k > k) { F3.w[k] = F3.on[k] ? 1 : 0; } else if (F3.build.k === k) { F3.build.t += dt / 0.9; F3.w[k] = F3.on[k] ? ease(F3.build.t) : 0; if (F3.build.t >= 1) { F3.build.k++; F3.build.t = 0; } again = true; } else F3.w[k] = 0; } else { const d = tgt - F3.w[k]; if (Math.abs(d) > 0.002) { F3.w[k] += d * Math.min(1, dt * 10); again = true; } else F3.w[k] = tgt; } }
+    if (F3.build && F3.build.k >= F3.K) F3.build = null;
+    if (c3a) c3a.dirty = true; if (c3b) c3b.dirty = true; return again;
+  };
+  v.tickers.push(f3tick);
+  el.addEventListener('change', (e) => { const i = e.target.dataset && e.target.dataset.h; if (i != null) { F3.on[+i] = e.target.checked; F3.build = null; v.kick(); } });
+  Q('#f3pre').addEventListener('click', (e) => { const b = e.target.closest('[data-r]'); if (!b) return; recipe(b.dataset.r); const odd = b.dataset.r !== 'saw'; for (let k = 0; k < F3.K; k++) { F3.on[k] = odd ? k % 2 === 0 : true; el.querySelector(`[data-h="${k}"]`).checked = F3.on[k]; } Q('#f3pre').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)); v.kick(); });
+  Q('#f3anim').addEventListener('click', () => { if (noMotion()) { for (let k = 0; k < F3.K; k++) F3.w[k] = F3.on[k] ? 1 : 0; v.kick(); return; } F3.w = F3.w.map(() => 0); F3.build = { k: 0, t: 0 }; v.kick(); });
+
+  /* ---- Chapter 4: signal -> components -> spectrum with the app's FFT ---- */
+  const F4 = { fr: [2, 5, 9], ph: [0, 0.8, 1.9], a: [1, 0.6, 0.35] };
+  const c4 = v.reg('f4', (g, w, h, cv, dt) => {
+    const p = v.adv(cv, dt, 5.5), N = 1024, x = new Float64Array(N); for (let i = 0; i < N; i++) { let s = 0; for (let k = 0; k < 3; k++) s += F4.a[k] * Math.sin(TAU * F4.fr[k] * i / N + F4.ph[k]); x[i] = s; }
+    const sp = ampSpec(x, false), col = [TH.la, TH.lb, TH.lc], pad = 8, ph = (h - pad * 4) / 3.1;
+    const rows = [{ y: pad, h: ph, name: 'signal (sum)' }, { y: pad * 2 + ph, h: ph, name: 'components' }, { y: pad * 3 + ph * 2, h: ph * 1.1, name: 'spectrum' }];
+    const bx = 56, bw = w - bx - 14, Xt = (t) => bx + bw * t;
+    for (const r of rows) { g.save(); g.fillStyle = TH.plot; g.fillRect(bx, r.y, bw, r.h); g.strokeStyle = TH.grid2; g.strokeRect(bx + .5, r.y + .5, bw - 1, r.h - 1); g.restore(); txt(g, r.name, 6, r.y + 10, TH.muted, 'left', '10.5px ' + MONO.split(' ').slice(1).join(' ')); }
+    const s1 = ease(p / 0.3), s2 = ease((p - 0.3) / 0.3), s3 = ease((p - 0.6) / 0.38), mid = (r) => r.y + r.h / 2;
+    let mx = 0; for (const a of F4.a) mx += a; const sc = rows[0].h * 0.44 / Math.max(1.2, mx);
+    { const pts = [], n = Math.round(300 * s1); for (let i = 0; i <= n; i++) pts.push([Xt(i / 300), mid(rows[0]) - x[Math.min(N - 1, Math.round(i / 300 * (N - 1)))] * sc]); line(g, pts, TH.accent, 2.2, 8); }
+    if (s2 > 0) { g.save(); g.globalAlpha = s2; for (let k = 0; k < 3; k++) { const pts = []; for (let i = 0; i <= 300; i++) { const t = i / 300; pts.push([Xt(t), mid(rows[1]) - F4.a[k] * Math.sin(TAU * F4.fr[k] * t + F4.ph[k]) * sc * 0.9]); } line(g, pts, col[k], 1.8, 0); } g.restore(); }
+    const R = rows[2], maxF = 12, base = R.y + R.h - 14;
+    for (let f = 0; f <= maxF; f += 2) txt(g, f + '', Xt(f / maxF), R.y + R.h - 5, TH.muted, 'center'); txt(g, 'Hz', bx + bw, R.y + 10, TH.muted, 'right');
+    for (let k = 0; k < 3; k++) {
+      const xf = Xt(F4.fr[k] / maxF), val = sp[F4.fr[k]], hh = Math.min(1, val / 1.25) * (R.h - 30) * s3;
+      if (s3 > 0) { g.save(); g.globalAlpha = 0.35 * s3; g.setLineDash([3, 4]); g.strokeStyle = col[k]; g.beginPath(); g.moveTo(xf, mid(rows[1]) + rows[1].h * 0.45); g.lineTo(xf, base - hh); g.stroke(); g.restore(); g.save(); g.strokeStyle = col[k]; g.lineWidth = 7; g.lineCap = 'round'; g.shadowColor = col[k]; g.shadowBlur = 10; g.beginPath(); g.moveTo(xf, base); g.lineTo(xf, base - hh); g.stroke(); g.restore(); if (s3 > 0.95) txt(g, fmtv(val), xf, base - hh - 9, TH.text, 'center'); }
+    }
+    cv.anim = p < 1;
+  }, { h: 330 }); if (c4) c4.autostart = true;
+  ['f4a', 'f4b', 'f4c'].forEach((id, i) => bindSl(el, id, '', (x) => { F4.a[i] = x; c4.invalidate(); }));
+
+  /* ---- Chapter 5: applications ---- */
+  const small = (g, w, h) => { const B = box(w, h, { l: 6, r: 6, t: 6, b: 6 }); g.save(); g.fillStyle = TH.plot; g.fillRect(0, 0, w, h); g.restore(); return B; };
+  // 5a music: chord whose note strengths breathe over time; spectrum of a real synthesised frame
+  const c5a = v.reg('f5a', (g, w, h, cv, dt) => {
+    cv.st.t = (cv.st.t || 0) + (noMotion() ? 0 : dt); const t = cv.st.t, N = 2048, fs = 8192, notes = [220, 277.18, 329.63], x = new Float64Array(N);
+    const am = notes.map((_, i) => noMotion() ? 0.7 : 0.55 + 0.45 * Math.sin(t * 1.3 + i * 2.1));
+    for (let i = 0; i < N; i++) { let s = 0; notes.forEach((f, k) => { for (let m = 1; m <= 3; m++) s += am[k] / m * Math.sin(TAU * f * m * i / fs); }); x[i] = s; }
+    const sp = ampSpec(x, true), B = small(g, w, h), maxF = 1100, bins = Math.round(maxF / (fs / N)), bw = B.w / bins;
+    for (let k = 1; k < bins; k++) { const hh = Math.min(1, sp[k] / 0.9) * (B.h - 18); g.fillStyle = k * fs / N < 700 ? TH.lb : TH.lc; g.fillRect(B.x0 + k * bw, B.y0 + B.h - 12 - hh, Math.max(1, bw - 0.5), hh); }
+    [0, 250, 500, 750, 1000].forEach((f) => txt(g, f + '', B.x0 + B.w * f / maxF, h - 6, TH.muted, 'center')); txt(g, 'Hz · chord A3, C#4, E4 + overtones', w - 8, 10, TH.muted, 'right'); cv.anim = !noMotion();
+  }, { h: 160 });
+  // 5b noise reduction: really filter in the frequency domain
+  const rn = rng(7), noise = Array.from({ length: 1024 }, () => (rn() + rn() + rn() - 1.5) * 1.1), F5 = { cut: 40 };
+  const c5b = v.reg('f5b', (g, w, h) => {
+    const N = 1024, x = new Float64Array(N), re = new Float64Array(N), im = new Float64Array(N);
+    for (let i = 0; i < N; i++) { x[i] = 0.9 * Math.sin(TAU * 5 * i / N) + 0.5 * Math.sin(TAU * 13 * i / N) + 0.3 * Math.sin(TAU * 27 * i / N); re[i] = x[i] + noise[i]; }
+    const nz = Float64Array.from(re); fftR(re, im, false); for (let k = 0; k < N; k++) { const kk = Math.min(k, N - k); if (kk > F5.cut) { re[k] = 0; im[k] = 0; } } fftR(re, im, true);
+    const B = small(g, w, h), Y = (v2) => B.y0 + B.h / 2 - v2 * B.h * 0.2, p1 = [], p2 = [];
+    for (let i = 0; i < N; i += 2) { p1.push([B.x0 + B.w * i / N, Y(nz[i])]); p2.push([B.x0 + B.w * i / N, Y(re[i])]); }
+    g.save(); g.globalAlpha = 0.45; line(g, p1, TH.muted, 1.2, 0); g.restore(); line(g, p2, TH.accent, 2.2, 6);
+  }, { h: 160 }); bindSl(el, 'f5bc', ' Hz', (x) => { F5.cut = x; c5b.invalidate(); });
+  // 5c image: real 2-D FFT on a 64x64 picture
+  const IM = 64, img = new Float64Array(IM * IM); for (let y = 0; y < IM; y++) for (let x = 0; x < IM; x++) { const dx = x - 32, dy = y - 30, r = Math.hypot(dx, dy); img[y * IM + x] = (r < 17 ? 0.9 : 0.15) + (r < 17 ? 0 : 0.18 * Math.sin(x * 0.9)) + (x > 8 && x < 14 && y > 44 ? 0.5 : 0); }
+  const fft2 = (re, im, inv) => { const rr = new Float64Array(IM), ii = new Float64Array(IM); for (let y = 0; y < IM; y++) { for (let x = 0; x < IM; x++) { rr[x] = re[y * IM + x]; ii[x] = im[y * IM + x]; } fftR(rr, ii, inv); for (let x = 0; x < IM; x++) { re[y * IM + x] = rr[x]; im[y * IM + x] = ii[x]; } } for (let x = 0; x < IM; x++) { for (let y = 0; y < IM; y++) { rr[y] = re[y * IM + x]; ii[y] = im[y * IM + x]; } fftR(rr, ii, inv); for (let y = 0; y < IM; y++) { re[y * IM + x] = rr[y]; im[y * IM + x] = ii[y]; } } };
+  const IR = Float64Array.from(img), II = new Float64Array(IM * IM); fft2(IR, II, false);
+  const F5i = { r: 32 }; const paintImg = (cv, fn) => { const g = cv.c.getContext('2d'), d = g.createImageData(IM, IM); for (let i = 0; i < IM * IM; i++) { const v2 = cl(Math.round(fn(i) * 255), 0, 255); d.data[i * 4] = d.data[i * 4 + 1] = d.data[i * 4 + 2] = v2; d.data[i * 4 + 3] = 255; } g.putImageData(d, 0, 0); };
+  const sh = (i) => { const x = i % IM, y = (i / IM) | 0; return ((y + IM / 2) % IM) * IM + ((x + IM / 2) % IM); };
+  let mxLog = 0; for (let i = 0; i < IM * IM; i++) mxLog = Math.max(mxLog, Math.log(1 + Math.hypot(IR[i], II[i])));
+  const i1 = v.reg('f5i1', (g, w, h, cv) => paintImg(cv, (i) => img[i]), { h: 118 }), i2 = v.reg('f5i2', (g, w, h, cv) => paintImg(cv, (i) => { const j = sh(i), x = i % IM, y = (i / IM) | 0, r = Math.hypot(x - 32, y - 32), keep = r <= F5i.r; return (keep ? 1 : 0.28) * Math.log(1 + Math.hypot(IR[j], II[j])) / mxLog; }), { h: 118 });
+  const i3 = v.reg('f5i3', (g, w, h, cv, dt) => { const re = Float64Array.from(IR), im = Float64Array.from(II); for (let i = 0; i < IM * IM; i++) { const j = sh(i), x = i % IM, y = (i / IM) | 0; if (Math.hypot(x - 32, y - 32) > F5i.r) { re[j] = 0; im[j] = 0; } } fft2(re, im, true); paintImg(cv, (i) => re[i]); }, { h: 118 });
+  [i1, i2, i3].forEach((c) => { if (c) { c.c.style.height = ''; c.c.removeAttribute('style'); c.draw = function () { this.fn(this.g, 64, 64, this, 0); }; } });
+  const imgSl = bindSl(el, 'f5ir', '', (x) => { F5i.r = x; i2.invalidate(); i3.invalidate(); });
+  const imgAnim = { run: false, t: 0 }; v.tickers.push((dt) => { if (!imgAnim.run) return false; imgAnim.t += dt / 3.2; const r = Math.round(lerp(2, 32, ease(imgAnim.t))); F5i.r = r; imgSl.set(r); i2.dirty = i3.dirty = true; if (imgAnim.t >= 1) imgAnim.run = false; return imgAnim.run; });
+  if (i3) { const orig = i3.draw; i3.autostart = false; const io = () => { if (i3.vis && !imgAnim.done && !noMotion()) { imgAnim.done = true; imgAnim.run = true; imgAnim.t = 0; F5i.r = 2; v.kick(); } }; v.afterVis = (v.afterVis || []).concat(io); }
+  // 5d communication: two AM carriers share one wire
+  const F5c = { ch: 0 }, MA = (t) => 1 + 0.6 * Math.sin(TAU * 3 * t), MB = (t) => 1 + 0.6 * Math.sin(TAU * 6 * t);
+  const c5c = v.reg('f5c', (g, w, h) => {
+    const N = 1024, x = new Float64Array(N); for (let i = 0; i < N; i++) { const t = i / N; x[i] = 0.5 * MA(t) * Math.cos(TAU * 40 * t) + 0.5 * MB(t) * Math.cos(TAU * 90 * t); }
+    const sp = ampSpec(x, false), re = Float64Array.from(x), im = new Float64Array(N); fftR(re, im, false);
+    const fc = F5c.ch ? 90 : 40; for (let k = 0; k < N; k++) { if (k === 0 || k >= N / 2 || Math.abs(k - fc) > 12) { re[k] = 0; im[k] = 0; } else { re[k] *= 2; im[k] *= 2; } } fftR(re, im, true);
+    const B = small(g, w, h), half = B.h * 0.5;
+    const maxF = 130, base = B.y0 + half - 8; for (let k = 0; k < maxF; k++) { const hh = Math.min(1, sp[k] / 0.4) * (half - 20), sel = Math.abs(k - fc) <= 12; g.fillStyle = sel ? TH.accent : TH.grid2; g.fillRect(B.x0 + B.w * k / maxF, base - hh, Math.max(1.5, B.w / maxF - 0.6), hh); }
+    txt(g, 'spectrum of the shared wire (Hz)', B.x0 + 4, B.y0 + 8, TH.muted); [0, 40, 90].forEach((f) => txt(g, f + '', B.x0 + B.w * f / maxF, base + 8, TH.muted, 'center'));
+    const p = [], y0 = B.y0 + half + half / 2 + 4; for (let i = 0; i < N; i += 4) p.push([B.x0 + B.w * i / N, y0 - (Math.hypot(re[i], im[i]) - 0.5) * half * 0.9]); line(g, p, TH.lb, 2.2, 6); txt(g, 'recovered message', B.x0 + 4, B.y0 + half + 12, TH.muted);
+  }, { h: 200 });
+  el.querySelector('#f5ch').addEventListener('click', (e) => { const b = e.target.closest('[data-ch]'); if (!b) return; F5c.ch = +b.dataset.ch; el.querySelectorAll('#f5ch button').forEach((x) => x.setAttribute('aria-pressed', x === b)); c5c.invalidate(); });
+  // 5e science: decaying ringing and its two peaks
+  const c5s = v.reg('f5s', (g, w, h, cv, dt) => {
+    const p = v.adv(cv, dt, 4), N = 1024, x = new Float64Array(N); for (let i = 0; i < N; i++) { const t = i / N; x[i] = Math.exp(-5 * t) * (Math.cos(TAU * 30 * t) + 0.6 * Math.cos(TAU * 46 * t)); }
+    const sp = ampSpec(x, false), B = small(g, w, h), half = B.h * 0.5, d = ease(p / 0.55), f = ease((p - 0.55) / 0.4), pts = [];
+    for (let i = 0; i < N * d; i += 3) pts.push([B.x0 + B.w * i / N, B.y0 + half * 0.5 - x[i] * half * 0.38]); line(g, pts, TH.accent, 1.8, 5); txt(g, 'signal from the instrument', B.x0 + 4, B.y0 + 8, TH.muted);
+    const base = B.y0 + B.h - 14, maxF = 80, mx = Math.max(...sp.slice(0, 80)); g.save(); g.strokeStyle = TH.lb; g.lineWidth = 2; g.shadowColor = TH.lb; g.shadowBlur = 6; g.beginPath(); for (let k = 0; k < maxF; k++) { const X = B.x0 + B.w * k / maxF, Y = base - sp[k] / mx * (half - 22) * f; if (k === 0) g.moveTo(X, Y); else g.lineTo(X, Y); } g.stroke(); g.restore();
+    [0, 20, 40, 60, 80].forEach((q) => txt(g, q + '', B.x0 + B.w * q / maxF, h - 5, TH.muted, 'center')); if (f > .9) { txt(g, '30 Hz', B.x0 + B.w * 30 / maxF, base - (half - 22) - 4, TH.text, 'center'); txt(g, '46 Hz', B.x0 + B.w * 46 / maxF, base - 0.6 * (half - 22) - 6, TH.text, 'center'); }
+    cv.anim = p < 1;
+  }, { h: 200 }); if (c5s) c5s.autostart = true;
+
+  /* ---- Chapter 6: laboratory ---- */
+  const F6 = { f0: 220, parts: [] }, NP = 8;
+  const preset = (n) => { const P = F6.parts; P.forEach((p, i) => { p.on = false; p.r = i + 1; p.a = 0.5; p.ph = 0; }); const set = (k, a, ph = 0, r) => { const p = P[k - 1]; p.on = true; p.a = a; p.ph = ph; if (r) p.r = r; };
+    if (n === 'sine') set(1, 0.8); else if (n === 'saw') for (let k = 1; k <= 8; k++) set(k, 0.7 / k); else if (n === 'sq') for (let k = 1; k <= 7; k += 2) set(k, 0.7 / k); else if (n === 'tri') for (let k = 1; k <= 7; k += 2) set(k, 0.7 / (k * k), ((k - 1) / 2) % 2 ? Math.PI : 0); else { set(1, 0.7, 0, 1); set(2, 0.5, 0, 2.76); set(3, 0.35, 0, 5.4); set(4, 0.25, 0, 8.93); } };
+  for (let i = 0; i < NP; i++) F6.parts.push({ on: false, r: i + 1, a: 0.5, ph: 0 });
+  const tbl = Q('#f6tbl'); tbl.innerHTML = '<tr style="color:var(--muted);text-align:left"><th>On</th><th>#</th><th>Frequency ratio</th><th>Amplitude</th><th>Phase (°)</th><th>Hz</th></tr>' + F6.parts.map((p, i) => `<tr><td><input type="checkbox" data-pn="${i}" aria-label="Partial ${i + 1} on"></td><td>${i + 1}</td><td><input type="range" data-pr="${i}" min="0.5" max="9" step="0.01" aria-label="Frequency ratio ${i + 1}" style="width:100%;min-width:90px;accent-color:var(--accent)"> <b data-pv="r${i}" style="font-family:var(--mono)"></b></td><td><input type="range" data-pa="${i}" min="0" max="1" step="0.01" aria-label="Amplitude ${i + 1}" style="width:100%;min-width:80px;accent-color:var(--accent)"></td><td><input type="range" data-pp="${i}" min="-180" max="180" step="5" aria-label="Phase ${i + 1}" style="width:100%;min-width:80px;accent-color:var(--accent)"></td><td data-pv="h${i}" style="font-family:var(--mono)"></td></tr>`).join('');
+  tbl.querySelectorAll('td').forEach((td) => { td.style.padding = '3px 6px'; });
+  const parts = () => F6.parts.map((p) => ({ on: p.on && p.a > 0, f: p.r * F6.f0, a: p.a, ph: p.ph }));
+  const syncTbl = () => { F6.parts.forEach((p, i) => { tbl.querySelector(`[data-pn="${i}"]`).checked = p.on; tbl.querySelector(`[data-pr="${i}"]`).value = p.r; tbl.querySelector(`[data-pa="${i}"]`).value = p.a; tbl.querySelector(`[data-pp="${i}"]`).value = Math.round(p.ph * 180 / Math.PI); tbl.querySelector(`[data-pv="r${i}"]`).textContent = '×' + p.r.toFixed(2); tbl.querySelector(`[data-pv="h${i}"]`).textContent = fmtv(p.r * F6.f0, 1); }); };
+  const lab = () => { c6w.invalidate(); c6s.invalidate(); FSyn.update(parts()); };
+  tbl.addEventListener('input', (e) => { const d = e.target.dataset, i = +(d.pn || d.pr || d.pa || d.pp); if (d.pn != null) F6.parts[i].on = e.target.checked; else if (d.pr != null) F6.parts[i].r = +e.target.value; else if (d.pa != null) F6.parts[i].a = +e.target.value; else if (d.pp != null) F6.parts[i].ph = +e.target.value * Math.PI / 180; else return; tbl.querySelector(`[data-pv="r${i}"]`).textContent = '×' + F6.parts[i].r.toFixed(2); tbl.querySelector(`[data-pv="h${i}"]`).textContent = fmtv(F6.parts[i].r * F6.f0, 1); lab(); });
+  const sig = (t) => { let s = 0; for (const p of F6.parts) if (p.on) s += p.a * Math.sin(TAU * p.r * F6.f0 * t + p.ph); return s; };
+  const c6w = v.reg('f6w', (g, w, h) => {
+    const B = box(w, h, { l: 44, b: 24, t: 8 }), T = 4 / F6.f0, xt = [], yt = []; for (let i = 0; i <= 4; i++) xt.push({ p: B.x0 + B.w * i / 4, label: fmtv(T * i / 4 * 1000, 1) }); for (const q of [-1, 0, 1]) yt.push({ p: B.y0 + B.h / 2 - q * B.h * 0.42, label: q + '' });
+    plotGrid(g, B, xt, yt, { xl: 'time (ms), 4 cycles of the base frequency' }); let mx = 0.001; for (const p of F6.parts) if (p.on) mx += p.a; const sc = 1 / Math.max(1, mx * 0.8), pts = [];
+    for (let i = 0; i <= 500; i++) { const t = T * i / 500; pts.push([B.x0 + B.w * i / 500, B.y0 + B.h / 2 - sig(t) * sc * B.h * 0.42]); } line(g, pts, TH.accent, 2.4, 8);
+  }, { h: 200 });
+  const c6s = v.reg('f6s', (g, w, h) => {
+    const N = 8192, fs = 22050, x = new Float64Array(N); for (let i = 0; i < N; i++) x[i] = sig(i / fs); const sp = ampSpec(x, true), B = box(w, h, { l: 44, b: 28, t: 8 });
+    let top = F6.f0 * 2; for (const p of F6.parts) if (p.on) top = Math.max(top, p.r * F6.f0); const maxF = Math.min(fs / 2, top * 1.25), bins = Math.floor(maxF / (fs / N)), xt = [], yt = [];
+    for (let i = 0; i <= 5; i++) xt.push({ p: B.x0 + B.w * i / 5, label: Math.round(maxF * i / 5) + '' }); [0, 0.5, 1].forEach((q) => yt.push({ p: B.y0 + B.h - q * B.h * 0.9, label: q + '' }));
+    plotGrid(g, B, xt, yt, { xl: 'frequency (Hz)' }); g.save(); g.strokeStyle = TH.lb; g.lineWidth = 1.6; g.shadowColor = TH.lb; g.shadowBlur = 5; g.beginPath(); for (let k = 0; k < bins; k++) { const X = B.x0 + B.w * k / bins, Y = B.y0 + B.h - Math.min(1.05, sp[k]) * B.h * 0.9; if (k === 0) g.moveTo(X, Y); else g.lineTo(X, Y); } g.stroke(); g.restore();
+    F6.parts.forEach((p, i) => { if (p.on && p.r * F6.f0 < maxF) { const X = B.x0 + B.w * p.r * F6.f0 / maxF; dot(g, X, B.y0 + B.h - Math.min(1.05, p.a) * B.h * 0.9, 3.5, COLS()[i], 6); } });
+  }, { h: 200 });
+  bindSl(el, 'f6f0', ' Hz', (x) => { F6.f0 = x; syncTbl(); lab(); }); bindSl(el, 'f6vol', '%', (x) => { LA.vol = x / 100; if (LA.out) LA.out.gain.value = Math.pow(LA.vol, 1.7) * 0.8; });
+  const playBtn = Q('#f6play'), setPlayUi = (on) => { playBtn.innerHTML = `<svg><use href="#i-${on ? 'pause' : 'play'}"/></svg>${on ? 'Pause' : 'Play'}`; };
+  playBtn.addEventListener('click', async () => { if (FSyn.playing) { FSyn.kill(); setPlayUi(false); } else { const ok = await FSyn.start(parts()); setPlayUi(ok); } });
+  Q('#f6stop').addEventListener('click', () => { FSyn.kill(); setPlayUi(false); });
+  el.querySelectorAll('[data-p]').forEach((b) => b.addEventListener('click', () => { preset(b.dataset.p); syncTbl(); lab(); }));
+  v.f6stop = () => { FSyn.kill(); setPlayUi(false); };
+  preset('sq'); syncTbl();
+}
+
+/* =====================================================================
+   GRAPH SONIFICATION: LEARN MORE
+   ===================================================================== */
+const sonHero = `<h1>How a Graph Becomes Sound</h1><p>A graph is a picture of a rule. Sonification turns that picture into something you can hear, so a rising curve sounds like a rising pitch and a peak sounds like a peak. This guide follows exactly what Graph Lab does, using the same curve builder, the same sound mapping and the same audio engine.</p><p class="lncap">Every "Play" button below uses Graph Lab's own mapping. Press Esc or Back to return to Graph Lab; your equation, view and settings stay untouched.</p>`;
+
+/* the graphs used by the guide: x runs from 0 to 1, y stays in about [-1, 1] */
+const FUNS = [
+  { id: 'sin', name: 'Sine', eq: 'a*sin(2*pi*b*x)', b: ['Cycles', 1, 8, 3, 1] },
+  { id: 'cos', name: 'Cosine', eq: 'a*cos(2*pi*b*x)', b: ['Cycles', 1, 8, 3, 1] },
+  { id: 'lin', name: 'Linear', eq: 'a*(2*x-1)', b: null },
+  { id: 'quad', name: 'Quadratic', eq: 'a*(8*(x-0.5)**2-1)', b: null },
+  { id: 'abs', name: 'Absolute value', eq: 'a*(2*abs(2*x-1)-1)', b: null },
+  { id: 'exp', name: 'Exponential', eq: 'a*(2*(e**(b*x)-1)/(e**b-1)-1)', b: ['Growth rate', 1, 8, 3, 0.5] },
+  { id: 'damp', name: 'Damped oscillation', eq: 'a*e**(-4*x)*sin(2*pi*b*x)', b: ['Cycles', 1, 12, 6, 1] },
+  { id: 'cust', name: 'Your own graph', eq: 'sin(2*pi*2*x)*x', b: null, custom: true },
+];
+const SONG_EQ = 'e**(-1.3*x)*sin(2*pi*3*x)';
+const sonChapters = [
+{ label: 'What is sonification?', title: 'What is sonification?', html: `
+<p class="lead rv"><b class="k1">Sonification</b> means representing data with sound. A Geiger counter clicking faster as radiation rises is sonification. So is a heart monitor's beep.</p>
+<p class="rv">Sound is good at things the eye finds slow: noticing a trend while you look elsewhere, hearing where a curve peaks, or exploring a graph without seeing it at all. That makes it useful for science, and for people who are blind or have low vision.</p>
+<p class="rv">A mathematical graph is a perfect candidate: it is a function y = f(x). Walk along x, read off y, and let y control something you can hear.</p>
+<figure class="lnfig rv"><canvas data-cv="s1" role="img" aria-label="A graph transforming into a sound waveform"></canvas><div class="lnrow"><button class="btn sm" data-replay="s1">Replay the transformation</button><button class="btn primary sm" data-hear="s1" id="s1play"><svg><use href="#i-play"/></svg>Hear this graph</button></div><figcaption class="lncap">The curve is drawn on a grid, then the grid fades and the same values become the height of an audio signal over time.</figcaption></figure>
+<ul class="lnl rv"><li><b class="k2">Graph:</b> y plotted against x, a picture.</li><li><b class="k3">Sound:</b> the same numbers, played one after another through the speakers.</li></ul>` },
+{ label: 'Graph to sound', title: 'How does a graph become sound?', html: `
+<p class="rv">Follow one point along a curve. Use the buttons to go step by step, or press <b>Run all</b>.</p>
+<ol class="lnsteps rv" id="s2steps"><li>The graph appears on a coordinate plane.</li><li>A point follows the curve.</li><li>The x-coordinate sets how far through the sound we are.</li><li>The y-coordinate sets the signal value.</li><li>The values are sampled into audio samples.</li><li>The samples are played through the audio system.</li></ol>
+<figure class="lnfig rv"><canvas data-cv="s2" role="img" aria-label="Step-by-step conversion of a graph into audio samples"></canvas>
+<div class="lnread" id="s2r" aria-live="polite"></div>
+<div class="lnrow"><button class="btn sm" id="s2prev">◀ Previous step</button><button class="btn sm" id="s2next">Next step ▶</button><button class="btn sm" id="s2all">Run all</button><span style="flex:1"></span><button class="btn primary sm" id="s2w"><svg><use href="#i-play"/></svg>Play as waveform</button><button class="btn primary sm" id="s2s"><svg><use href="#i-play"/></svg>Play as sonification</button></div></figure>
+<p class="lnnote rv"><b>Two ways, one graph.</b> Graph Lab can play a curve as a <b>waveform</b> (the curve is one cycle of a repeating wave, so y is the sample value) or as a <b>sonification</b> (a moving cursor reads y and turns it into pitch). Steps 4 to 6 above show the waveform route, where y becomes a sample; the play buttons let you hear both.</p>` },
+{ label: 'The waveform', title: 'Understanding the waveform', html: `
+<p class="rv">Sound is air pressure changing over time. A <b class="k1">waveform</b> is a graph of that pressure: time along the bottom, signal value up the side. Zero is the quiet resting level, <b class="k2">positive values</b> push the speaker out and <b class="k4">negative values</b> pull it in.</p>
+<ul class="lnl rv"><li><b class="k1">Amplitude</b>: the largest distance from zero. Bigger means louder.</li><li><b class="k2">Frequency</b>: cycles per second. Higher means higher pitch.</li><li><b class="k3">Period</b>: the duration of one cycle, T = 1/f.</li><li><b class="k4">Phase</b>: how far the cycle has already progressed at t = 0.</li></ul>
+<figure class="lnfig rv"><canvas data-cv="s3" role="img" aria-label="Waveform with moving cursor"></canvas><div class="lnread" id="s3r" aria-live="off"></div>
+<div class="lnctl">${sl('s3a', 'Amplitude', 0.1, 1, 0.01, 0.8)}${sl('s3f', 'Frequency (Hz)', 1, 12, 0.5, 4)}${sl('s3p', 'Phase (degrees)', -180, 180, 5, 0)}</div></figure>
+<p class="lnnote rv">The time axis here covers one second so you can see the cycles; a real tone of 440 Hz would pack 440 cycles into that second.</p>` },
+{ label: 'How graphs sound', title: 'How different graphs sound', html: `
+<p class="rv">Pick a function. The top panel is the <b>mathematical graph</b>. The middle panel is the <b>pitch</b> the sonifier produces as the cursor moves. The bottom is a zoomed look at the <b>audio waveform</b> at the cursor. Drag across the top graph to scrub silently.</p>
+<figure class="lnfig rv"><div class="lnrow" style="margin:0 0 8px"><div class="seg" role="group" aria-label="Function" id="s4fn" style="flex-wrap:wrap"></div></div>
+<div class="lnrow" id="s4cust" hidden style="margin:0 0 8px"><label class="lnsl" style="flex:1;min-width:220px"><span>y = f(x), with x from 0 to 1</span><input class="field" id="s4eq" value="sin(2*pi*2*x)*x" aria-label="Custom equation"></label></div>
+<div class="lnmsg" id="s4err" role="alert" style="color:var(--bad);font-size:12.5px"></div>
+<canvas data-cv="s4" role="img" aria-label="Graph, pitch contour and audio waveform for the chosen function"></canvas>
+<div class="lnread" id="s4r" aria-live="off"></div>
+<div class="lnrow"><button class="btn primary" id="s4play"><svg><use href="#i-play"/></svg>Play Sonification</button><button class="btn" id="s4stop"><svg><use href="#i-stop"/></svg>Stop</button><div class="seg" role="group" aria-label="Sound mode" id="s4mode"><button data-m="sonify" aria-pressed="true">Sonify: y sets pitch</button><button data-m="wave" aria-pressed="false">Waveform: graph is the wave</button></div></div></figure>
+<p class="lnnote rv"><b>Listen for:</b> a straight line is a steady glide; the absolute-value graph falls then rises; the quadratic gives a smooth dip; the damped oscillation wobbles and settles.</p>` },
+{ label: 'The mapping', title: 'Understanding the sound mapping', html: `
+<p class="rv">These are the rules Graph Lab uses in Sonify mode. The guide runs the identical calculation, so changing a slider here changes what you hear below.</p>
+<figure class="lnfig rv"><canvas data-cv="s5" role="img" aria-label="Graph with a pitch ruler on the right and a time ruler below"></canvas>
+<div class="lnctl">${sl('s5d', 'Duration of the sweep (s)', 2, 20, 0.5, 6)}${sl('s5c', 'Centre pitch (Hz)', 110, 880, 1, 440)}${sl('s5o', 'Pitch range (octaves)', 0.5, 4, 0.1, 2)}${sl('s5s', 'Loudness sensitivity to slope', 1, 40, 1, 12)}</div>
+<div class="lnrow"><button class="btn primary sm" id="s5play"><svg><use href="#i-play"/></svg>Play with these settings</button><button class="btn sm" id="s5stop"><svg><use href="#i-stop"/></svg>Stop</button></div></figure>
+<div class="lncards rv"><div class="lncard"><h3>Sonify mode: y becomes pitch</h3><p><span class="lneq">playback time = x · duration</span></p><p><span class="lneq">pitch = centre · 2<sup>(y/peak · octaves/2)</sup></span></p><p><span class="lneq">loudness = 0.35 + 0.65 · √(slope · sensitivity)</span></p><p id="s5t1"></p></div>
+<div class="lncard"><h3>Waveform mode: the graph is one cycle</h3><p><span class="lneq">sample i = y(i / N), i = 0 … N−1</span></p><p><span class="lneq">pitch = playback rate = f cycles per second</span></p><p id="s5t2"></p></div></div>
+<p class="lnnote rv"><b>Graph versus audio waveform.</b> The graph is a picture of f(x) on a mathematical axis. The audio waveform is air pressure against real time. In Waveform mode the graph itself becomes one cycle of that pressure curve. In Sonify mode the pressure curve is always a plain sine wave; the graph only steers its pitch and loudness.</p>` },
+{ label: 'Laboratory', title: 'Interactive Sonification Laboratory', html: `
+<p class="lead rv">Choose graphs, bend their parameters, set how long the sweep takes, and listen. Pick a second graph to compare the two.</p>
+<figure class="lnfig rv"><div class="lnrow" style="margin:0 0 8px"><label class="lnsl" style="min-width:170px"><span>Graph A</span><select class="field" id="s6a" aria-label="Graph A"></select></label><label class="lnsl" style="min-width:170px"><span>Compare with (graph B)</span><select class="field" id="s6b" aria-label="Graph B"><option value="">none</option></select></label></div>
+<div class="lnrow" id="s6cust" hidden style="margin:0 0 8px"><label class="lnsl" style="flex:1;min-width:220px"><span>Custom y = f(x); you may use x, a and b</span><input class="field" id="s6eq" value="a*sin(2*pi*b*x)*x" aria-label="Custom equation"></label></div>
+<div class="lnmsg" id="s6err" role="alert" style="color:var(--bad);font-size:12.5px"></div>
+<canvas data-cv="s6" role="img" aria-label="Laboratory graph, position indicator and audio waveform"></canvas>
+<div class="lnread" id="s6r" aria-live="off"></div>
+<div class="lnctl">${sl('s6a1', 'Amplitude a', 0.1, 1.5, 0.05, 1)}<label class="lnsl" id="s6bw">${sl('s6b1', 'Shape b', 1, 12, 0.5, 3).replace(/^<label class="lnsl">|<\/label>$/g, '')}</label>${sl('s6d', 'Playback duration (s)', 2, 20, 0.5, 6)}</div>
+<div class="lnrow"><button class="btn primary" id="s6play"><svg><use href="#i-play"/></svg>Play A</button><button class="btn" id="s6pb"><svg><use href="#i-play"/></svg>Play B</button><button class="btn" id="s6pause"><svg><use href="#i-pause"/></svg>Pause</button><button class="btn" id="s6stop"><svg><use href="#i-stop"/></svg>Stop</button><label class="chk inl"><input type="checkbox" id="s6beep"> beep at peaks and dips (as in Graph Lab)</label><div class="seg" role="group" aria-label="Sound mode" id="s6mode"><button data-m="sonify" aria-pressed="true">Sonify</button><button data-m="wave" aria-pressed="false">Waveform</button></div></div></figure>
+<p class="lnnote rv"><b>Ideas:</b> compare Sine with Cosine (same shape, shifted). Compare Linear with Exponential. Raise "Shape b" on the damped oscillation to hear faster wobbles. Switch to Waveform mode to hear the graph itself as a tone.</p>` },
+];
+
+function setupSonify(v) {
+  const el = v.el, Q = (s) => $1(s, el); v.tickers = [];
+  el.addEventListener('click', (e) => { const b = e.target.closest('[data-replay]'); if (b) { const cv = v.cvs.find((x) => x.name === b.dataset.replay); if (cv) cv.restart(); } });
+  const bad = (id, m) => { const n = Q(id); if (n) n.textContent = m || ''; };
+  const cache = new Map(), mk = (eq, a = 1, b = 1) => { const k = eq + '|' + a + '|' + b; if (cache.has(k)) return cache.get(k); const ex = getExpr(eq); const c = buildCurve(ex, { f: 1, amp: 1, spanSec: 1, n: 1000, a, b, c: 1, d: 1, level: 'limit', aa: true, prom: 5 }); c.expr = ex; c.eq = eq; c.env = { f: 1, a, b, c: 1, d: 1 }; if (cache.size > 60) cache.delete(cache.keys().next().value); cache.set(k, c); return c; };
+  const wrapSon = (c, o, hooks) => { Son.stop(); return Son.play(c, o, hooks); };
+  const setBtn = (id, on, label) => { const b = Q(id); if (b) b.innerHTML = `<svg><use href="#i-${on ? 'stop' : 'play'}"/></svg>${label}`; };
+  const contour = (c, o) => { const st = { logf: null, amp: 0 }, n = 120, steps = Math.max(60, Math.round(o.sweep * 60)), out = []; let k = 0; for (let i = 0; i <= steps; i++) { const r = sonMap(c, i / steps * c.spanSec, st, o, 1 / 60); if (i % Math.ceil(steps / n) === 0) out.push([i / steps, r.pitch, r.amp, r.y]); } return out; };
+  const mapY = (B, y, top) => B.y0 + B.h / 2 - y / top * B.h * 0.46;
+  const curveTop = (cs) => Math.max(1.05, ...cs.map((c) => c.peak * 1.08));
+  const drawGraph = (g, B, curves, cols, curPos, o = {}) => {
+    const top = o.top || curveTop(curves), xt = [], yt = []; for (let i = 0; i <= 10; i++) xt.push({ p: B.x0 + B.w * i / 10, label: i % 2 ? null : (i / 10).toFixed(1) }); [-1, 0, 1].forEach((q) => yt.push({ p: mapY(B, q * (top > 1.5 ? 1 : 1), top), label: q + '' }));
+    plotGrid(g, B, xt, yt, { xl: o.xl || 'x' }); g.save(); g.strokeStyle = TH.axis; g.globalAlpha = .7; g.beginPath(); g.moveTo(B.x0, mapY(B, 0, top)); g.lineTo(B.x0 + B.w, mapY(B, 0, top)); g.stroke(); g.restore();
+    curves.forEach((c, k) => { const pts = [], n = 300, lim = o.draw == null ? 1 : o.draw; for (let i = 0; i <= n * lim; i++) { const x = i / n, y = curveValueAt(c, Math.min(x, 0.9999)); pts.push([B.x0 + B.w * x, Number.isFinite(y) ? mapY(B, y, top) : NaN]); } line(g, pts, cols[k], 2.4, 8); });
+    return top;
+  };
+
+  /* ---- Chapter 1 ---- */
+  const c1c = mk(SONG_EQ);
+  const s1 = v.reg('s1', (g, w, h, cv, dt) => {
+    const p = v.adv(cv, dt, 5), B = box(w, h, { l: 36, r: 10, t: 12, b: 24 }), m = ease((p - 0.45) / 0.45), dr = ease(p / 0.4), top = 1.1;
+    g.save(); g.fillStyle = TH.plot; g.fillRect(B.x0, B.y0, B.w, B.h); g.restore();
+    g.save(); g.globalAlpha = 1 - m; plotGrid(g, B, [0, 2, 4, 6, 8, 10].map((i) => ({ p: B.x0 + B.w * i / 10, label: (i / 10).toFixed(1) })), [-1, 0, 1].map((q) => ({ p: mapY(B, q, top), label: q + '' })), { xl: 'x' }); g.restore();
+    const cy = mapY(B, 0, top); g.save(); g.strokeStyle = TH.axis; g.beginPath(); g.moveTo(B.x0, cy); g.lineTo(B.x0 + B.w, cy); g.stroke(); g.restore();
+    const n = 360, pts = []; for (let i = 0; i <= n * dr; i++) { const x = i / n, y = curveValueAt(c1c, Math.min(x, 0.9999)); pts.push([B.x0 + B.w * x, mapY(B, y, top)]); }
+    if (m > 0) { g.save(); g.globalAlpha = m * 0.8; g.strokeStyle = TH.lb; g.lineWidth = 1.4; g.beginPath(); for (let i = 0; i <= n; i += 2) { const x = i / n, y = curveValueAt(c1c, Math.min(x, 0.9999)); g.moveTo(B.x0 + B.w * x, cy); g.lineTo(B.x0 + B.w * x, mapY(B, y, top)); } g.stroke(); g.restore(); txt(g, 'audio signal: value over time', B.x0 + 6, B.y0 + 9, TH.lb); }
+    else txt(g, 'graph: y = f(x)', B.x0 + 6, B.y0 + 9, TH.muted);
+    line(g, pts, TH.accent, 2.6, 10); if (p < 0.4 && pts.length) dot(g, pts[pts.length - 1][0], pts[pts.length - 1][1], 5, TH.accent, 14);
+    if (m > 0.2) { txt(g, 'time (s)', B.x0 + B.w, B.y0 + B.h + 14, TH.muted, 'right'); }
+    cv.anim = p < 1;
+  }, { h: 240 }); if (s1) s1.autostart = true;
+  Q('#s1play').addEventListener('click', async () => { if (Son.state !== 'stopped' && Son.owner === 's1') { Son.stop(); return; } Son.owner = 's1'; setBtn('#s1play', true, 'Stop'); await wrapSon(c1c, { sweep: 5 }, { onTick: (pos) => { s1.p = Math.min(1, 0.45 + pos * 0.55); s1.dirty = true; v.kick(); }, onEnd: () => setBtn('#s1play', false, 'Hear this graph') }); });
+
+  /* ---- Chapter 2: stepper ---- */
+  const c2c = mk(SONG_EQ), S2 = { step: 0, t: 0, run: false }, N2 = 64;
+  const stepsEl = Q('#s2steps').children;
+  const setStep = (i) => { S2.step = cl(i, 0, 5); S2.t = 0; for (let k = 0; k < 6; k++) { stepsEl[k].classList.toggle('on', k === S2.step); stepsEl[k].classList.toggle('done', k < S2.step); } s2.invalidate(); v.kick(); };
+  const s2 = v.reg('s2', (g, w, h) => {
+    const t = S2.t, st = S2.step, top = 1.1, B1 = box(w, h * 0.5 - 4, { l: 44, r: 12, t: 8, b: 16 }), B2 = box(w, h * 0.5, { l: 44, r: 12, t: 8, b: 22 }); B2.y0 += h * 0.5 - 4;
+    const drawn = st === 0 ? ease(t) : 1; drawGraph(g, B1, [c2c], [TH.accent], null, { draw: drawn, top, xl: '' });
+    txt(g, 'graph: y = f(x)', B1.x0 + 6, B1.y0 + 8, TH.muted); txt(g, 'audio signal over time', B2.x0 + 6, B2.y0 + 8, TH.muted);
+    const xs = st === 1 ? ease(t) : st >= 2 ? (st === 5 ? t : 0.62) : 0, y = curveValueAt(c2c, Math.min(xs, 0.9999)), PX = B1.x0 + B1.w * xs, PY = mapY(B1, y, top);
+    plotGrid(g, B2, [0, 2, 4, 6, 8, 10].map((i) => ({ p: B2.x0 + B2.w * i / 10, label: (i / 10 * 6).toFixed(1) + ' s' })), [-1, 0, 1].map((q) => ({ p: mapY(B2, q, top), label: q + '' })));
+    const sampleUpTo = st < 4 ? (st === 3 ? xs : 0) : st === 4 ? ease(t) : 1;
+    if (st >= 3 && st < 4) { const pts = []; for (let i = 0; i <= 200 * xs; i++) { const x = i / 200; pts.push([B2.x0 + B2.w * x, mapY(B2, curveValueAt(c2c, Math.min(x, 0.9999)), top)]); } line(g, pts, TH.lb, 2, 6); }
+    if (st >= 4) { g.save(); g.strokeStyle = TH.lb; g.fillStyle = TH.lb; g.lineWidth = 1.6; const nn = Math.round(N2 * (st === 4 ? sampleUpTo : 1)); for (let i = 0; i < nn; i++) { const x = (i + 0.5) / N2, yy = mapY(B2, curveValueAt(c2c, x), top), X = B2.x0 + B2.w * x; g.beginPath(); g.moveTo(X, mapY(B2, 0, top)); g.lineTo(X, yy); g.stroke(); g.beginPath(); g.arc(X, yy, 2.4, 0, TAU); g.fill(); } g.restore(); }
+    if (st >= 1) { dot(g, PX, PY, 6, TH.accent, 16); }
+    if (st === 2 || st === 3 || st === 5) { g.save(); g.setLineDash([4, 4]); g.strokeStyle = TH.ld; g.beginPath(); g.moveTo(PX, PY); g.lineTo(PX, B1.y0 + B1.h); g.stroke(); if (st >= 3) { g.strokeStyle = TH.lc; g.beginPath(); g.moveTo(PX, PY); g.lineTo(B1.x0, PY); g.stroke(); } g.restore(); if (st === 2) { g.save(); g.setLineDash([4, 4]); g.strokeStyle = TH.ld; g.beginPath(); g.moveTo(PX, B2.y0); g.lineTo(PX, B2.y0 + B2.h); g.stroke(); g.restore(); } }
+    if (st === 3 || st === 5) { dot(g, B2.x0 + B2.w * xs, mapY(B2, y, top), 5, TH.lb, 12); }
+    const r = Q('#s2r'), D = 6, tm = xs * D, n = Math.round(xs * N2);
+    r.textContent = ['Step 1: the graph is drawn on a coordinate plane. Here y = ' + SONG_EQ.replace(/\*\*/g, '^') + ' for x from 0 to 1.', 'Step 2: a point travels along the curve from left to right.', `Step 3: x = ${fmtv(xs)} means ${fmtv(xs * 100, 0)}% of the way through; with a ${D} s sound that is playback time t = x × ${D} = ${fmtv(tm)} s.`, `Step 4: at x = ${fmtv(xs)} the curve has y = ${fmtv(y, 3)}. That height is the signal value at time ${fmtv(tm)} s (positive pushes the speaker out, negative pulls in).`, `Step 5: the signal is measured at regular instants. The picture uses ${N2} samples; the real engine stores ${typeof BROWSER_TABLE_N !== 'undefined' ? BROWSER_TABLE_N : 2048} samples per cycle and plays them at ${audio.sr} samples per second.`, `Step 6: the samples go to the audio engine. Position x = ${fmtv(xs)}, y = ${fmtv(y, 3)} → pitch ${fmtv(sonMapPeek(c2c, xs), 0)} Hz in Sonify mode.`][st];
+  }, { h: 340 });
+  const sonMapPeek = (c, x) => sonMap(c, x, { logf: null, amp: 0 }, SON_DEF, 0).pitch;
+  v.tickers.push((dt) => { if (S2.run || S2.anim) { S2.t += dt / (S2.step === 0 ? 1.6 : S2.step === 4 ? 2.4 : S2.step === 5 ? 5 : 1.9); if (S2.t >= 1) { S2.t = 1; if (S2.run && S2.step < 5) { setStep(S2.step + 1); } else { S2.run = false; S2.anim = false; } } s2.dirty = true; return S2.run || S2.anim; } return false; });
+  const go = (i) => { S2.run = false; setStep(i); if (noMotion()) { S2.t = 1; s2.dirty = true; } else { S2.anim = true; } v.kick(); };
+  Q('#s2prev').addEventListener('click', () => go(S2.step - 1)); Q('#s2next').addEventListener('click', () => go(S2.step + 1));
+  Q('#s2all').addEventListener('click', () => { if (noMotion()) { setStep(5); S2.t = 0.62; s2.invalidate(); return; } setStep(0); S2.run = true; v.kick(); });
+  v.afterVis = (v.afterVis || []).concat(() => { if (s2.vis && !S2.init) { S2.init = true; setStep(0); S2.anim = !noMotion(); if (noMotion()) S2.t = 1; v.kick(); } });
+  const playRoute = async (mode, btn, cb) => { if (Son.state !== 'stopped' && Son.owner === btn) { Son.stop(); return; } Son.owner = btn; Q('#s2w').innerHTML = '<svg><use href="#i-play"/></svg>Play as waveform'; Q('#s2s').innerHTML = '<svg><use href="#i-play"/></svg>Play as sonification'; Q(btn).innerHTML = '<svg><use href="#i-stop"/></svg>Stop'; setStep(5); S2.run = false; S2.anim = false; await wrapSon(c2c, { sweep: 6, mode, f: 220 }, { onTick: (pos) => { S2.t = pos; s2.dirty = true; }, onEnd: () => { Q(btn).innerHTML = `<svg><use href="#i-play"/></svg>Play as ${mode === 'wave' ? 'waveform' : 'sonification'}`; } }); };
+  Q('#s2w').addEventListener('click', () => playRoute('wave', '#s2w')); Q('#s2s').addEventListener('click', () => playRoute('sonify', '#s2s'));
+
+  /* ---- Chapter 3: waveform with cursor ---- */
+  const S3 = { a: 0.8, f: 4, ph: 0, cur: 0 };
+  const s3 = v.reg('s3', (g, w, h) => {
+    const B = box(w, h, { l: 44, b: 28 }), xt = [], yt = []; for (let i = 0; i <= 10; i++) xt.push({ p: B.x0 + B.w * i / 10, label: (i / 10).toFixed(1) }); [-1, -0.5, 0, 0.5, 1].forEach((q) => yt.push({ p: B.y0 + B.h / 2 - q * B.h * 0.46, label: q.toFixed(1) }));
+    plotGrid(g, B, xt, yt, { xl: 'time t (s)' }); const Y = (y) => B.y0 + B.h / 2 - y * B.h * 0.46, X = (t) => B.x0 + B.w * t, ph = S3.ph * Math.PI / 180, fn = (t) => S3.a * Math.sin(TAU * S3.f * t + ph), z = Y(0);
+    g.save(); const pos = [], neg = []; g.beginPath(); g.moveTo(X(0), z); for (let i = 0; i <= 400; i++) { const t = i / 400; g.lineTo(X(t), Y(Math.max(0, fn(t)))); } g.lineTo(X(1), z); g.closePath(); g.fillStyle = TH.lb; g.globalAlpha = .16; g.fill(); g.beginPath(); g.moveTo(X(0), z); for (let i = 0; i <= 400; i++) { const t = i / 400; g.lineTo(X(t), Y(Math.min(0, fn(t)))); } g.lineTo(X(1), z); g.closePath(); g.fillStyle = TH.ld; g.fill(); g.restore();
+    const pts = []; for (let i = 0; i <= 400; i++) { const t = i / 400; pts.push([X(t), Y(fn(t))]); } line(g, pts, TH.accent, 2.4, 8);
+    txt(g, 'positive: speaker pushes out', B.x0 + 8, B.y0 + 10, TH.lb); txt(g, 'negative: speaker pulls in', B.x0 + 8, B.y0 + B.h - 10, TH.ld);
+    const T = 1 / S3.f; if (T < 0.9) { arrow(g, X(0.02), B.y0 + B.h - 28, X(0.02 + T), B.y0 + B.h - 28, TH.lc); txt(g, 'T = ' + fmtv(T, 3) + ' s', X(0.02 + T / 2), B.y0 + B.h - 38, TH.lc, 'center'); }
+    const cx = X(S3.cur), cy = Y(fn(S3.cur)); g.save(); g.strokeStyle = TH.text; g.globalAlpha = .45; g.beginPath(); g.moveTo(cx, B.y0); g.lineTo(cx, B.y0 + B.h); g.stroke(); g.restore(); dot(g, cx, cy, 5.5, TH.accent, 14);
+    Q('#s3r').textContent = `t = ${fmtv(S3.cur, 3)} s    value = ${fmtv(fn(S3.cur), 3)} (${fn(S3.cur) > 0.001 ? 'positive' : fn(S3.cur) < -0.001 ? 'negative' : 'zero'})    amplitude ${fmtv(S3.a)}   frequency ${fmtv(S3.f, 1)} Hz   period ${fmtv(T, 3)} s`;
+  }, { h: 260 });
+  v.tickers.push((dt) => { if (!s3.vis) return false; if (noMotion()) { S3.cur = 0.3; s3.dirty = true; return false; } S3.cur = (S3.cur + dt / 6) % 1; s3.dirty = true; return true; });
+  bindSl(el, 's3a', '', (x) => { S3.a = x; s3.invalidate(); }); bindSl(el, 's3f', ' Hz', (x) => { S3.f = x; s3.invalidate(); }); bindSl(el, 's3p', '°', (x) => { S3.ph = x; s3.invalidate(); });
+
+  /* ---- Chapter 4: how different graphs sound ---- */
+  const S4 = { id: 'sin', mode: 'sonify', cur: 0, scrub: null, pc: null, c: null, cont: null };
+  Q('#s4fn').innerHTML = FUNS.map((f) => `<button data-fn="${f.id}" aria-pressed="${f.id === S4.id}">${f.name}</button>`).join('');
+  const fnCurve = (f, a = 1, b) => { let eq = f.eq; if (f.custom) eq = Q('#s4eq').value; const bb = b != null ? b : f.b ? f.b[3] : 1; return mk(eq, a, bb); };
+  const s4load = () => { const f = FUNS.find((x) => x.id === S4.id); bad('#s4err', ''); try { S4.c = fnCurve(f); } catch (e) { bad('#s4err', 'Cannot draw that equation: ' + (e.message || e)); return; } S4.cont = contour(S4.c, Object.assign({}, SON_DEF, { sweep: 6 })); s4.invalidate(); };
+  const s4 = v.reg('s4', (g, w, h, cv) => {
+    if (!S4.c) s4load(); if (!S4.c) return;
+    const H1 = h * 0.42, H2 = h * 0.26, B1 = box(w, H1, { l: 44, t: 8, b: 18 }), B2 = box(w, H2, { l: 44, t: 6, b: 16 }); B2.y0 += H1; const B3 = box(w, h - H1 - H2, { l: 44, t: 6, b: 6 }); B3.y0 += H1 + H2;
+    const pos = S4.scrub != null ? S4.scrub : S4.cur, top = drawGraph(g, B1, [S4.c], [TH.accent], pos, { xl: '' });
+    txt(g, 'graph y = f(x)', B1.x0 + 6, B1.y0 + 8, TH.muted); const yv = curveValueAt(S4.c, Math.min(pos, 0.9999)); if (Number.isFinite(yv)) { dot(g, B1.x0 + B1.w * pos, mapY(B1, yv, top), 5.5, TH.accent, 14); g.save(); g.setLineDash([3, 4]); g.strokeStyle = TH.ld; g.beginPath(); g.moveTo(B1.x0 + B1.w * pos, B1.y0); g.lineTo(B1.x0 + B1.w * pos, B1.y0 + B1.h); g.stroke(); g.restore(); }
+    // pitch contour (log axis, 60..6000 Hz as in the app)
+    g.save(); g.fillStyle = TH.plot; g.fillRect(B2.x0, B2.y0, B2.w, B2.h); g.strokeStyle = TH.axis; g.strokeRect(B2.x0 + .5, B2.y0 + .5, B2.w - 1, B2.h - 1); g.restore();
+    const lo = Math.log2(110), hi = Math.log2(1760), PY = (f) => B2.y0 + B2.h - (Math.log2(cl(f, 110, 1760)) - lo) / (hi - lo) * B2.h;
+    [220, 440, 880].forEach((f) => { g.save(); g.strokeStyle = TH.grid2; g.beginPath(); g.moveTo(B2.x0, PY(f)); g.lineTo(B2.x0 + B2.w, PY(f)); g.stroke(); g.restore(); txt(g, f + '', B2.x0 - 5, PY(f), TH.axis, 'right'); });
+    if (S4.mode === 'sonify' && S4.cont) { line(g, S4.cont.map((q) => [B2.x0 + B2.w * q[0], PY(q[1])]), TH.lb, 2.2, 6); txt(g, 'pitch (Hz)', B2.x0 + 6, B2.y0 + 9, TH.muted); const i = Math.min(S4.cont.length - 1, Math.round(pos * (S4.cont.length - 1))); dot(g, B2.x0 + B2.w * pos, PY(S4.cont[i][1]), 4.5, TH.lb, 10); }
+    else { line(g, [[B2.x0, PY(440)], [B2.x0 + B2.w, PY(440)]], TH.lb, 2, 0); txt(g, 'Waveform mode: pitch stays constant (the graph is the timbre)', B2.x0 + 6, B2.y0 + 9, TH.muted); }
+    // audio snippet at the cursor
+    g.save(); g.fillStyle = TH.plot; g.fillRect(B3.x0, B3.y0, B3.w, B3.h); g.strokeStyle = TH.axis; g.strokeRect(B3.x0 + .5, B3.y0 + .5, B3.w - 1, B3.h - 1); g.restore();
+    const pts = [], mid = B3.y0 + B3.h / 2;
+    if (S4.mode === 'sonify' && S4.cont) { const i = Math.min(S4.cont.length - 1, Math.round(pos * (S4.cont.length - 1))), pit = S4.cont[i][1], am = S4.cont[i][2]; for (let k = 0; k <= 300; k++) { const tt = k / 300 * 0.012; pts.push([B3.x0 + B3.w * k / 300, mid - Math.sin(TAU * pit * tt) * am * B3.h * 0.42]); } txt(g, `audio waveform, last 12 ms at the cursor: sine at ${fmtv(pit, 0)} Hz`, B3.x0 + 6, B3.y0 + 9, TH.muted); }
+    else { for (let k = 0; k <= 300; k++) { const y = curveValueAt(S4.c, Math.min(k / 300, 0.9999)); pts.push([B3.x0 + B3.w * k / 300, mid - y / top * B3.h * 0.42]); } txt(g, 'audio waveform: one cycle, played over and over at 220 Hz', B3.x0 + 6, B3.y0 + 9, TH.muted); }
+    line(g, pts, TH.lc, 2, 6);
+    const i2 = Math.min(S4.cont ? S4.cont.length - 1 : 0, Math.round(pos * ((S4.cont || [0]).length - 1))); Q('#s4r').textContent = `x = ${fmtv(pos, 3)}   y = ${fmtv(yv, 3)}   ` + (S4.mode === 'sonify' && S4.cont ? `pitch ${fmtv(S4.cont[i2][1], 0)} Hz   loudness ${fmtv(S4.cont[i2][2], 2)}` : 'waveform value = y');
+  }, { h: 420 });
+  Q('#s4fn').addEventListener('click', (e) => { const b = e.target.closest('[data-fn]'); if (!b) return; Son.stop(); S4.id = b.dataset.fn; S4.cur = 0; Q('#s4fn').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)); Q('#s4cust').hidden = S4.id !== 'cust'; s4load(); });
+  Q('#s4eq').addEventListener('input', () => { if (S4.id === 'cust') s4load(); });
+  Q('#s4mode').addEventListener('click', (e) => { const b = e.target.closest('[data-m]'); if (!b) return; Son.stop(); S4.mode = b.dataset.m; Q('#s4mode').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)); s4.invalidate(); });
+  const pointerPos = (ev) => { const r = s4.c.getBoundingClientRect(); return cl((ev.clientX - r.left - 44) / (r.width - 56), 0, 1); };
+  s4.c.addEventListener('pointerdown', (ev) => { if (Son.state === 'playing' && Son.owner === 's4') return; S4.scrub = pointerPos(ev); s4.c.setPointerCapture(ev.pointerId); s4.invalidate(); });
+  s4.c.addEventListener('pointermove', (ev) => { if (S4.scrub != null) { S4.scrub = pointerPos(ev); s4.invalidate(); } });
+  const endScrub = () => { if (S4.scrub != null) { S4.cur = S4.scrub; S4.scrub = null; s4.invalidate(); } }; s4.c.addEventListener('pointerup', endScrub); s4.c.addEventListener('pointercancel', endScrub);
+  v.tickers.push((dt) => { if (!s4.vis || Son.owner === 's4' && Son.state !== 'stopped' || S4.scrub != null) return false; if (noMotion()) return false; S4.cur = (S4.cur + dt / 8) % 1; s4.dirty = true; return true; });
+  Q('#s4play').addEventListener('click', async () => { if (!S4.c) return; if (Son.state === 'playing' && Son.owner === 's4') { Son.stop(); return; } Son.owner = 's4'; setBtn('#s4play', true, 'Stop'); await wrapSon(S4.c, { sweep: 6, mode: S4.mode, f: 220 }, { onTick: (pos) => { S4.cur = pos; s4.dirty = true; v.kick(); }, onEnd: () => setBtn('#s4play', false, 'Play Sonification') }); });
+  Q('#s4stop').addEventListener('click', () => Son.stop());
+
+  /* ---- Chapter 5: mapping ---- */
+  const S5 = { sweep: 6, center: 440, oct: 2, sens: 12, cur: 0 }, c5c = mk(SONG_EQ);
+  const so5 = () => ({ center: S5.center, oct: S5.oct, sens: S5.sens, auto: true, sweep: S5.sweep });
+  const txt5 = () => { Q('#s5t1').textContent = `With these settings: x from 0 to 1 takes ${fmtv(S5.sweep, 1)} s; y = +peak gives ${fmtv(S5.center * Math.pow(2, S5.oct / 2), 0)} Hz, y = 0 gives ${fmtv(S5.center, 0)} Hz, y = −peak gives ${fmtv(S5.center * Math.pow(2, -S5.oct / 2), 0)} Hz. The sound is a sine wave sampled at ${audio.sr} Hz by the browser.`; Q('#s5t2').textContent = `Here N = ${typeof BROWSER_TABLE_N !== 'undefined' ? BROWSER_TABLE_N : 2048} samples per cycle and the output sample rate is ${audio.sr} Hz. Playing the cycle f = 220 times per second reads ${fmtv((typeof BROWSER_TABLE_N !== 'undefined' ? BROWSER_TABLE_N : 2048) * 220, 0)} table values per second, so duration is simply as long as you keep it playing.`; };
+  const s5 = v.reg('s5', (g, w, h) => {
+    const B = box(w, h, { l: 44, r: 54, t: 12, b: 38 }), top = 1.1; drawGraph(g, B, [c5c], [TH.accent], null, { top, xl: '' });
+    const yHz = (y) => S5.center * Math.pow(2, cl(y / c5c.peak, -1, 1) * S5.oct / 2);
+    [-1, -0.5, 0, 0.5, 1].forEach((q) => { const y = q * c5c.peak; txt(g, fmtv(yHz(y), 0) + ' Hz', B.x0 + B.w + 6, mapY(B, y, top), TH.lb, 'left'); }); txt(g, 'pitch', B.x0 + B.w + 6, B.y0 - 2, TH.lb);
+    for (let i = 0; i <= 5; i++) txt(g, fmtv(i / 5 * S5.sweep, 1) + ' s', B.x0 + B.w * i / 5, B.y0 + B.h + 24, TH.lb, 'center'); txt(g, 'x (top)  →  playback time (bottom)', B.x0 + B.w / 2, B.y0 + B.h + 36, TH.muted, 'center');
+    const pos = S5.cur, yv = curveValueAt(c5c, Math.min(pos, 0.9999)); dot(g, B.x0 + B.w * pos, mapY(B, yv, top), 5.5, TH.accent, 14);
+    const r = sonMap(c5c, pos, { logf: null, amp: 0 }, so5(), 0); g.save(); g.setLineDash([4, 4]); g.strokeStyle = TH.lb; g.beginPath(); g.moveTo(B.x0 + B.w * pos, mapY(B, yv, top)); g.lineTo(B.x0 + B.w, mapY(B, yv, top)); g.stroke(); g.restore();
+    txt(g, `t = ${fmtv(pos * S5.sweep, 2)} s   y = ${fmtv(yv, 3)}   pitch = ${fmtv(r.targetPitch, 0)} Hz   loudness = ${fmtv(0.35 + 0.65 * Math.sqrt(r.steep), 2)}`, B.x0 + 8, B.y0 + 10, TH.text);
+    txt5();
+  }, { h: 300 });
+  v.tickers.push((dt) => { if (!s5.vis || Son.owner === 's5' && Son.state !== 'stopped') return false; if (noMotion()) return false; S5.cur = (S5.cur + dt / S5.sweep) % 1; s5.dirty = true; return true; });
+  [['s5d', ' s', 'sweep'], ['s5c', ' Hz', 'center'], ['s5o', ' oct', 'oct'], ['s5s', '', 'sens']].forEach(([id, u, k]) => bindSl(el, id, u, (x) => { S5[k] = x; s5.invalidate(); }));
+  Q('#s5play').addEventListener('click', async () => { Son.owner = 's5'; await wrapSon(c5c, Object.assign(so5(), { mode: 'sonify' }), { onTick: (pos) => { S5.cur = pos; s5.dirty = true; v.kick(); }, onEnd: () => { } }); });
+  Q('#s5stop').addEventListener('click', () => Son.stop());
+
+  /* ---- Chapter 6: laboratory ---- */
+  const S6 = { A: 'sin', B: '', a: 1, b: 3, sweep: 6, mode: 'sonify', cur: 0, which: 'A', beeps: false };
+  const opts = FUNS.map((f) => `<option value="${f.id}">${f.name}</option>`).join(''); Q('#s6a').innerHTML = opts; Q('#s6b').insertAdjacentHTML('beforeend', opts);
+  const fun = (id) => FUNS.find((f) => f.id === id);
+  const s6c = (id) => { const f = fun(id); if (!f) return null; const eq = f.custom ? Q('#s6eq').value : f.eq; return mk(eq, S6.a, f.b || f.custom ? S6.b : 1); };
+  const s6sync = () => { const f = fun(S6.A), fb = fun(S6.B), uses = (f && (f.b || f.custom)) || (fb && (fb.b || fb.custom)); const inp = Q('#s6b1'); inp.disabled = !uses; if (f && f.b) { inp.min = f.b[1]; inp.max = f.b[2]; inp.step = f.b[4]; } else if (f && f.custom) { inp.min = 1; inp.max = 12; inp.step = 0.5; } Q('#s6b1-v').textContent = S6.b; Q('#s6cust').hidden = !(S6.A === 'cust' || S6.B === 'cust'); };
+  const s6 = v.reg('s6', (g, w, h) => {
+    bad('#s6err', ''); let cA, cB = null; try { cA = s6c(S6.A); cB = S6.B ? s6c(S6.B) : null; } catch (e) { bad('#s6err', 'Cannot draw that equation: ' + (e.message || e)); return; }
+    const H1 = h * 0.52, B1 = box(w, H1, { l: 44, t: 8, b: 18 }), B2 = box(w, h - H1, { l: 44, t: 6, b: 8 }); B2.y0 += H1; const cs = cB ? [cA, cB] : [cA], top = curveTop(cs);
+    drawGraph(g, B1, cs, [TH.accent, TH.lb], null, { top, xl: '' }); txt(g, 'A', B1.x0 + 8, B1.y0 + 10, TH.accent); if (cB) txt(g, 'B', B1.x0 + 24, B1.y0 + 10, TH.lb);
+    const cur = S6.which === 'B' && cB ? cB : cA, col = S6.which === 'B' && cB ? TH.lb : TH.accent, pos = S6.cur, yv = curveValueAt(cur, Math.min(pos, 0.9999)); const px = B1.x0 + B1.w * pos;
+    g.save(); g.strokeStyle = TH.text; g.globalAlpha = .4; g.beginPath(); g.moveTo(px, B1.y0); g.lineTo(px, B1.y0 + B1.h); g.stroke(); g.restore(); if (Number.isFinite(yv)) dot(g, px, mapY(B1, yv, top), 5.5, col, 14);
+    g.save(); g.fillStyle = TH.plot; g.fillRect(B2.x0, B2.y0, B2.w, B2.h); g.strokeStyle = TH.axis; g.strokeRect(B2.x0 + .5, B2.y0 + .5, B2.w - 1, B2.h - 1); g.restore();
+    const mid = B2.y0 + B2.h / 2, st = { logf: null, amp: 0 }, o = { center: 440, oct: 2, sens: 12, auto: true }, pts = [];
+    if (S6.mode === 'sonify') { const r = sonMap(cur, Math.min(pos, 0.9999), { logf: null, amp: 0 }, o, 0); for (let k = 0; k <= 400; k++) pts.push([B2.x0 + B2.w * k / 400, mid - Math.sin(TAU * r.targetPitch * k / 400 * 0.012) * r.amp * B2.h * 0.42]); txt(g, `audio waveform (12 ms window): sine at ${fmtv(r.targetPitch, 0)} Hz`, B2.x0 + 6, B2.y0 + 9, TH.muted); }
+    else { for (let k = 0; k <= 400; k++) pts.push([B2.x0 + B2.w * k / 400, mid - curveValueAt(cur, Math.min(k / 400, 0.9999)) / top * B2.h * 0.42]); txt(g, 'audio waveform: the graph is one cycle, repeated at 220 Hz', B2.x0 + 6, B2.y0 + 9, TH.muted); }
+    line(g, pts, TH.lc, 2, 6); Q('#s6r').textContent = `${S6.which === 'B' && cB ? 'B' : 'A'}: x = ${fmtv(pos, 3)}  time = ${fmtv(pos * S6.sweep, 2)} s of ${fmtv(S6.sweep, 1)} s   y = ${fmtv(yv, 3)}` + (S6.mode === 'sonify' ? `   pitch ${fmtv(sonMap(cur, Math.min(pos, .9999), { logf: null, amp: 0 }, o, 0).targetPitch, 0)} Hz` : '');
+  }, { h: 400 });
+  const refresh6 = () => { s6sync(); s6.invalidate(); };
+  Q('#s6a').addEventListener('change', (e) => { Son.stop(); S6.A = e.target.value; S6.cur = 0; if (fun(S6.A).b) { S6.b = fun(S6.A).b[3]; Q('#s6b1').value = S6.b; } refresh6(); });
+  Q('#s6b').addEventListener('change', (e) => { Son.stop(); S6.B = e.target.value; refresh6(); });
+  Q('#s6eq').addEventListener('input', refresh6);
+  bindSl(el, 's6a1', '', (x) => { S6.a = x; s6.invalidate(); }); bindSl(el, 's6b1', '', (x) => { S6.b = x; s6.invalidate(); }); bindSl(el, 's6d', ' s', (x) => { S6.sweep = x; if (Son.owner === 's6' && Son.state !== 'stopped') Son.sweep = x; s6.invalidate(); });
+  Q('#s6mode').addEventListener('click', (e) => { const b = e.target.closest('[data-m]'); if (!b) return; Son.stop(); S6.mode = b.dataset.m; Q('#s6mode').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)); s6.invalidate(); });
+  Q('#s6beep').addEventListener('change', (e) => { S6.beeps = e.target.checked; });
+  const play6 = async (which) => { let c; try { S6.which = which; c = s6c(which === 'B' ? S6.B : S6.A); } catch (e) { bad('#s6err', 'Cannot play that equation: ' + (e.message || e)); return; } if (!c) { warn('Choose a graph B first.'); return; } if (Son.state === 'paused' && Son.owner === 's6' + which) { Son.resume(); return; } Son.owner = 's6' + which; await wrapSon(c, { sweep: S6.sweep, mode: S6.mode, f: 220, beeps: S6.beeps }, { onTick: (pos) => { S6.cur = pos; s6.dirty = true; v.kick(); }, onEnd: () => { } }); };
+  Q('#s6play').addEventListener('click', () => play6('A')); Q('#s6pb').addEventListener('click', () => play6('B'));
+  Q('#s6pause').addEventListener('click', () => { if (Son.state === 'playing') Son.pause(); else if (Son.state === 'paused') Son.resume(); });
+  Q('#s6stop').addEventListener('click', () => { Son.stop(); S6.cur = 0; s6.invalidate(); });
+  v.tickers.push((dt) => { if (!s6.vis || Son.state !== 'stopped' && String(Son.owner).startsWith('s6')) return false; if (noMotion()) return false; S6.cur = (S6.cur + dt / 8) % 1; s6.dirty = true; return true; });
+  s6sync(); setStep(0); S2.t = 1; s4load();
+}
+
+/* =====================================================================
+   OPENING ANIMATION
+   ===================================================================== */
+const Intro = {
+  el: null, cv: null, g: null, raf: 0, t0: 0, ending: false, running: false, to: 0, sym: null, W: 0, H: 0,
+  start() {
+    const root = document.documentElement; this.el = $1('#moIntro'); if (!this.el) { root.classList.remove('mo-intro-on', 'mo-intro-reveal'); return; }
+    this.cv = $1('#moIntroCv'); this.g = this.cv.getContext('2d'); this.running = true; this.ending = false; this.el.classList.remove('leave', 'title');
+    const r = rng(11); this.sym = Array.from({ length: 16 }, (_, i) => ({ s: ['∑', '∫', 'π', '√', '∞', 'f(x)', 'sin x', 'Δ', 'λ', '∂', 'θ', 'e^(iπ)', 'ω', 'dx', 'cos x', 'Σ aₙ'][i], x: r(), y: r(), v: 0.012 + r() * 0.02, a: 0.18 + r() * 0.3, z: 14 + r() * 16 }));
+    this.size(); this.onKey = (e) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') { if (this.running) { e.preventDefault(); e.stopPropagation(); this.finish(true); } } };
+    this.onResize = () => this.size(); window.addEventListener('resize', this.onResize); document.addEventListener('keydown', this.onKey, true);
+    $1('#moSkip').onclick = () => this.finish(true); try { $1('#moSkip').focus({ preventScroll: true }); } catch (e) { /* ignore */ }
+    this.t0 = performance.now(); this.to = setTimeout(() => this.finish(false), 12000);       // hard failsafe: never block the app
+    const step = (now) => { if (!this.running) return; const tm = (now - this.t0) / 1000 * 0.64; try { this.draw(tm); } catch (e) { console.error(e); this.finish(true); return; } if (tm > 4.0 && !this.ending) this.finish(false); if (this.running) this.raf = requestAnimationFrame(step); };
+    this.raf = requestAnimationFrame(step);
+  },
+  size() { const d = Math.min(2, window.devicePixelRatio || 1); this.W = window.innerWidth; this.H = window.innerHeight; this.cv.width = Math.round(this.W * d); this.cv.height = Math.round(this.H * d); this.g.setTransform(d, 0, 0, d, 0, 0); },
+  finish(fast) {
+    if (this.ending) return; this.ending = true; clearTimeout(this.to); const root = document.documentElement, el = this.el;
+    root.classList.add('mo-intro-reveal'); el.classList.add('title', 'leave');
+    if (fast) el.style.transitionDuration = '.45s';
+    setTimeout(() => this.cleanup(), fast ? 520 : 980);
+  },
+  cleanup() {
+    this.running = false; cancelAnimationFrame(this.raf); window.removeEventListener('resize', this.onResize); document.removeEventListener('keydown', this.onKey, true);
+    const root = document.documentElement; root.classList.remove('mo-intro-on'); setTimeout(() => root.classList.remove('mo-intro-reveal'), 1000);
+    if (this.el) { this.el.classList.remove('leave', 'title'); this.el.style.transitionDuration = ''; }
+    try { if (typeof graph !== 'undefined' && graph) { graph.resize(); graph.invalidate(); } } catch (e) { /* ignore */ }
+    try { const t = $1('#playBtn'); if (t && !$1('#workspace').hidden) t.focus({ preventScroll: true }); } catch (e) { /* ignore */ }
+  },
+  draw(tm) {
+    const g = this.g, W = this.W, H = this.H, cx = W / 2, cy = H / 2, U = Math.min(W, H);
+    g.clearRect(0, 0, W, H);
+    const amber = '#ffb547', teal = '#46d9cf', violet = '#b49cff';
+    const s2 = ease((tm - 1.5) / 1.4), grow = ease((tm - 3.0) / 1.2);            // stage 2 progress, stage 3 grid expansion
+    g.save(); g.translate(cx, cy); const sc = 1 + grow * 0.9; g.scale(sc, sc); g.translate(-cx, -cy);
+    /* grid appears from the centre outwards */
+    const gp = ease(tm / 1.1), R = gp * Math.hypot(W, H) * 0.62, step = Math.max(34, U / 14), fade = 1 - 0.55 * s2;
+    g.lineWidth = 1; for (let x = cx % step - step; x < W + step; x += step) { const d = Math.abs(x - cx); if (d > R) continue; g.strokeStyle = `rgba(110,130,180,${0.16 * fade * (1 - d / (R + 1)) + 0.03})`; g.beginPath(); g.moveTo(x, cy - Math.sqrt(Math.max(0, R * R - d * d))); g.lineTo(x, cy + Math.sqrt(Math.max(0, R * R - d * d))); g.stroke(); }
+    for (let y = cy % step - step; y < H + step; y += step) { const d = Math.abs(y - cy); if (d > R) continue; g.strokeStyle = `rgba(110,130,180,${0.16 * fade * (1 - d / (R + 1)) + 0.03})`; g.beginPath(); g.moveTo(cx - Math.sqrt(Math.max(0, R * R - d * d)), y); g.lineTo(cx + Math.sqrt(Math.max(0, R * R - d * d)), y); g.stroke(); }
+    g.strokeStyle = `rgba(160,175,215,${0.55 * gp})`; g.lineWidth = 1.4; g.beginPath(); g.moveTo(cx - R, cy); g.lineTo(cx + R, cy); g.moveTo(cx, cy - R); g.lineTo(cx, cy + R); g.stroke();
+    g.fillStyle = `rgba(160,175,215,${0.7 * gp})`; g.font = '11px ui-monospace, Consolas, monospace'; g.textAlign = 'center'; for (let i = -6; i <= 6; i++) { if (!i) continue; const x = cx + i * step * 2; if (x > 10 && x < W - 10 && Math.abs(x - cx) < R) g.fillText(s2 > 0.5 ? (i * 0.5).toFixed(1) + 's' : String(i * 2), x, cy + 16); }
+    g.restore();
+    /* floating mathematical symbols */
+    g.textAlign = 'center'; for (const s of this.sym) { const a = s.a * ease((tm - 0.3) / 1.2) * (1 - grow * 0.6); if (a <= 0.01) continue; const y = ((s.y - tm * s.v) % 1 + 1) % 1; g.fillStyle = `rgba(190,200,235,${a})`; g.font = `${s.z}px Cambria Math, STIX Two Text, Georgia, serif`; g.fillText(s.s, s.x * W, y * H); }
+    /* the curve: a sine at first, then more harmonics (square-wave build-up) moving across the screen */
+    const x0 = W * 0.16, x1 = W * 0.9, A = U * 0.17, draw = ease(tm / 1.6), w1 = 1, ws = [1, s2 / 3, s2 / 5, s2 / 7], phase = -tm * 2.2 * (0.3 + s2);
+    const fy = (u) => { let y = 0; for (let k = 0; k < 4; k++) y += ws[k] * Math.sin((2 * k + 1) * (u * 9.4 + phase)); return y; };
+    const norm = 1 / (1 + s2 * 0.35), pts = [], n = 220, lim = Math.floor(n * draw);
+    const cyy = cy - s2 * U * 0.05;
+    for (let i = 0; i <= lim; i++) { const u = i / n; pts.push([x0 + (x1 - x0) * u, cyy - fy(u) * A * norm]); }
+    const alpha = 1 - grow * 0.5;
+    if (pts.length > 1) { g.save(); g.globalAlpha = alpha; g.strokeStyle = amber; g.lineWidth = 3; g.lineJoin = 'round'; g.shadowColor = amber; g.shadowBlur = 16; g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.stroke(); g.restore(); }
+    /* moving point + sparkles */
+    if (pts.length > 1 && tm < 1.9) { const p = pts[pts.length - 1]; g.save(); g.globalAlpha = alpha; g.fillStyle = '#fff'; g.shadowColor = amber; g.shadowBlur = 24; g.beginPath(); g.arc(p[0], p[1], 6, 0, TAU); g.fill(); g.restore();
+      g.strokeStyle = 'rgba(255,181,71,.35)'; g.setLineDash([4, 5]); g.lineWidth = 1; g.beginPath(); g.moveTo(p[0], p[1]); g.lineTo(p[0], cy); g.moveTo(p[0], p[1]); g.lineTo(cx, p[1]); g.stroke(); g.setLineDash([]);
+      if (tm < 1.7) { g.fillStyle = 'rgba(236,232,223,.8)'; g.font = '13px ui-monospace, Consolas, monospace'; g.textAlign = 'left'; g.fillText(`(${((p[0] - cx) / U * 10).toFixed(2)}, ${((cy - p[1]) / U * 10).toFixed(2)})`, p[0] + 12, p[1] - 12); } }
+    for (let k = 0; k < 26; k++) { const q = ((k * 0.037 + tm * 0.4) % 1), idx = Math.floor(q * (pts.length - 1)); if (idx < 1 || !pts[idx]) continue; const px = pts[idx][0], py = pts[idx][1] + Math.sin(k * 12.9 + tm * 3) * 14; g.fillStyle = `rgba(70,217,207,${0.55 * (1 - q) * alpha})`; g.beginPath(); g.arc(px, py, 1.4 + (k % 3) * 0.5, 0, TAU); g.fill(); }
+    /* equation caption */
+    g.textAlign = 'left'; g.font = `${Math.max(14, U * 0.026)}px Cambria Math, Georgia, serif`; const cap1 = ease((tm - 0.5) / 0.6) * (1 - s2), cap2 = s2 * (1 - grow);
+    g.fillStyle = `rgba(255,181,71,${cap1})`; g.fillText('y = sin(x)', x0, cy - A * 1.9); g.fillStyle = `rgba(255,181,71,${cap2})`; g.fillText('y = Σ sin((2k+1)t) / (2k+1)', x0, cy - A * 1.9);
+    /* Fourier-inspired epicycles that trace the waveform, and a growing spectrum */
+    if (s2 > 0) {
+      const ex = W * 0.1, ey = cyy, R0 = A * norm * 0.75, cols = [violet, teal, amber, '#ff8fb1']; let px = ex, py = ey; g.save(); g.globalAlpha = s2 * (1 - grow * 0.6);
+      for (let k = 0; k < 4; k++) { const r = R0 * ws[k]; if (r < 1) continue; const th = (2 * k + 1) * phase; g.strokeStyle = cols[k]; g.lineWidth = 1.2; g.beginPath(); g.arc(px, py, r, 0, TAU); g.stroke(); const nx = px + r * Math.cos(th), ny = py - r * Math.sin(th); g.beginPath(); g.moveTo(px, py); g.lineTo(nx, ny); g.stroke(); px = nx; py = ny; }
+      g.restore();
+      /* tip of the epicycle chain follows the same y as the curve start */
+      const y0 = py; g.save(); g.globalAlpha = s2 * 0.9; g.strokeStyle = teal; g.lineWidth = 1.4; g.setLineDash([3, 4]); g.beginPath(); g.moveTo(px, py); g.lineTo(x0, y0); g.stroke(); g.setLineDash([]); dot2(g, px, py, 5, teal); g.restore();
+      const bx = W * 0.64, by = H * 0.8, bw = Math.max(10, W * 0.018); g.save(); g.globalAlpha = s2 * (1 - grow * 0.5); for (let k = 0; k < 4; k++) { const hh = (ws[k] > 0 ? 1 / (2 * k + 1) : 0) * U * 0.2 * s2; g.fillStyle = [amber, teal, violet, '#ff8fb1'][k]; g.shadowColor = g.fillStyle; g.shadowBlur = 10; g.fillRect(bx + k * bw * 2, by - hh, bw, hh); } g.shadowBlur = 0; g.fillStyle = 'rgba(160,175,215,.75)'; g.font = '11px ui-monospace, Consolas, monospace'; g.textAlign = 'left'; g.fillText('spectrum', bx, by + 16); g.restore();
+    }
+  },
+};
+function dot2(g, x, y, r, col) { g.save(); g.fillStyle = col; g.shadowColor = col; g.shadowBlur = 14; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); g.restore(); }
+
+/* =====================================================================
+   PUBLIC API + wiring
+   ===================================================================== */
+function viewFor(name) {
+  if (name === 'fourier') return views.lnFourier || createView({ id: 'lnFourier', title: 'Fourier Transformation: Learn More', short: 'Fourier Transformation', back: 'Back to Fourier Analysis', backTitle: 'Return to Fourier Analysis (Esc)', hero: fourierHero, chapters: fourierChapters, setup: setupFourier, onClose: (v) => { if (v.f6stop) v.f6stop(); Son.stop(); } });
+  if (name === 'sonify') return views.lnSonify || createView({ id: 'lnSonify', title: 'Graph Sonification: Learn More', short: 'Graph Sonification', back: 'Back to Graph Lab', backTitle: 'Return to Graph Lab (Esc)', hero: sonHero, chapters: sonChapters, setup: setupSonify, onClose: () => { Son.stop(); } });
+  return null;
+}
+function open(name, opener) { try { const v = viewFor(name); if (v) v.openView(opener); } catch (e) { console.error(e); warn('Sorry, the guide could not open. ' + (e.message || '')); try { const v = viewFor(name); if (v) v.close(); } catch (e2) { /* ignore */ } } }
+function replayIntro() {
+  try { if (typeof currentTab === 'function' && currentTab() !== 'lab') setTab('lab'); } catch (e) { /* ignore */ }
+  if (Intro.running) return; document.documentElement.classList.add('mo-intro-on'); document.documentElement.classList.remove('mo-intro-reveal'); Intro.start();
+}
+function init() {
+  document.addEventListener('click', (e) => { const b = e.target.closest('[data-learn]'); if (b) { e.preventDefault(); open(b.dataset.learn, b); } const r = e.target.closest('[data-replay-intro]'); if (r) replayIntro(); });
+  window.addEventListener('pagehide', () => { try { Son.stop(); FSyn.kill(); } catch (e) { /* ignore */ } });
+  const root = document.documentElement;
+  if (root.classList.contains('mo-intro-on')) {
+    let ok = true; try { ok = !noMotion(); } catch (e) { ok = false; }
+    if (ok) { try { Intro.start(); } catch (e) { console.error(e); root.classList.remove('mo-intro-on'); } } else root.classList.remove('mo-intro-on');
+  }
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+return { open, replayIntro, Intro, Son, views, sonMap, makeCurve };
+})();
+window.MOLearn = MOLearn;
+
 </script>
 </body>
 </html>
